@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: ct-image-processor-backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/CTImageProcessorDB
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
