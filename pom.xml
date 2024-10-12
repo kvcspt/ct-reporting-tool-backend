@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>hu.kvcspt</groupId>
-    <artifactId>ct-image-processor-backend</artifactId>
+    <artifactId>ct-reporting-tool-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>ct-image-processor-backend</name>
-    <description>ct-image-processor-backend</description>
+    <name>ct-reporting-tool-backend</name>
+    <description>ct-reporting-tool-backend</description>
     <url/>
     <licenses>
         <license/>
