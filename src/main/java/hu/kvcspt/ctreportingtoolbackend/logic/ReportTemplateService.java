@@ -26,6 +26,9 @@ public class ReportTemplateService {
     }
 
     public ReportTemplate createReportTemplate(ReportTemplate reportTemplate){
+        if(!reportTemplate.getSectionTemplates().isEmpty()){
+            reportTemplate.getSectionTemplates().forEach(sectionTemplate -> sectionTemplate.setReportTemplate(reportTemplate));
+        }
         return reportTemplateRepository.save(reportTemplate);
     }
 
