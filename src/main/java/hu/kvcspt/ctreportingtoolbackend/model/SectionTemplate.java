@@ -24,4 +24,7 @@ public class SectionTemplate {
 
     @ElementCollection
     private List<String> requiredFields;
+    @ManyToOne
+    @JoinColumn(name = "report_template_id")
+    private ReportTemplate reportTemplate;
 }

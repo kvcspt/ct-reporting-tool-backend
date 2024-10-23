@@ -24,8 +24,7 @@ public class ReportTemplate {
     private Long id;
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "section_template_id")
+    @OneToMany(mappedBy = "reportTemplate",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SectionTemplate> sectionTemplates;
 
     public StructureDefinition toFhirStructureDefinition() {
