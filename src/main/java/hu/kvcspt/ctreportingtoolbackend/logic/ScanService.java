@@ -16,7 +16,7 @@ public class ScanService {
         return scanRepository.findAll();
     }
     public Scan getScanById(Long id){
-        return scanRepository.getReferenceById(id);
+        return scanRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Scan ID does not exist!"));
     }
     public Scan updateScan(Scan scan){
         if(scanRepository.existsById(scan.getId())){

@@ -16,7 +16,7 @@ public class ReportTemplateService {
         return reportTemplateRepository.findAll();
     }
     public ReportTemplate getReportTemplateById(Long id){
-        return reportTemplateRepository.getReferenceById(id);
+        return reportTemplateRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Report Template ID does not exist!"));
     }
     public ReportTemplate updateReportTemplate(ReportTemplate reportTemplate){
         if(reportTemplateRepository.existsById(reportTemplate.getId())){

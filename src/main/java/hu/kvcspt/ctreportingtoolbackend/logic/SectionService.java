@@ -16,7 +16,7 @@ public class SectionService {
         return sectionRepository.findAll();
     }
     public Section getSectionById(Long id){
-        return sectionRepository.getReferenceById(id);
+        return sectionRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Section ID does not exist!"));
     }
     public Section updateSection(Section section){
         if(sectionRepository.existsById(section.getId())){

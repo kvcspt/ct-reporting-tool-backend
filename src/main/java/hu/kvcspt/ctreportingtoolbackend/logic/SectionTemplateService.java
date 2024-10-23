@@ -17,7 +17,7 @@ public class SectionTemplateService {
         return sectionTemplateRepository.findAll();
     }
     public SectionTemplate getSectionTemplateById(Long id){
-        return sectionTemplateRepository.getReferenceById(id);
+        return sectionTemplateRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("SectionTemplate ID does not exist!"));
     }
     public SectionTemplate updateSectionTemplate(SectionTemplate sectionTemplate){
         if(sectionTemplateRepository.existsById(sectionTemplate.getId())){

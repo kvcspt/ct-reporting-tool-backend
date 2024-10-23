@@ -18,7 +18,7 @@ public class ReportService {
         return reportRepository.findAll();
     }
     public Report getReportById(Long id){
-        return reportRepository.getReferenceById(id);
+        return reportRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Report ID does not exist!"));
     }
     public Report updateReport(Report report){
         if(reportRepository.existsById(report.getId())){

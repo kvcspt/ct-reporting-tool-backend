@@ -17,7 +17,7 @@ public class UserService {
         return userRepository.findAll();
     }
     public User getUserById(Long id){
-        return userRepository.getReferenceById(id);
+        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User ID does not exist!"));
     }
     public User updateUser(User user){
         if(userRepository.existsById(user.getId())){

@@ -16,7 +16,7 @@ public class PatientService {
         return patientRepository.findAll();
     }
     public Patient getPatientById(Long id){
-        return patientRepository.getReferenceById(id);
+        return patientRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Patient ID does not exist!"));
     }
     public Patient updatePatient(Patient patient){
         if(patientRepository.existsById(patient.getId())){
