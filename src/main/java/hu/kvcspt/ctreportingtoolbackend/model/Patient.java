@@ -3,6 +3,7 @@ package hu.kvcspt.ctreportingtoolbackend.model;
 import hu.kvcspt.ctreportingtoolbackend.enums.Gender;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hl7.fhir.r5.model.Address;
@@ -18,6 +19,7 @@ import java.util.List;
 @Entity
 @Table(name = "patients")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Patient {

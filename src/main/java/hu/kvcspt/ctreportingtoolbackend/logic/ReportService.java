@@ -1,6 +1,5 @@
 package hu.kvcspt.ctreportingtoolbackend.logic;
 
-import hu.kvcspt.ctreportingtoolbackend.model.Patient;
 import hu.kvcspt.ctreportingtoolbackend.model.Report;
 import hu.kvcspt.ctreportingtoolbackend.model.repository.ReportRepository;
 import lombok.AllArgsConstructor;
