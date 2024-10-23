@@ -17,6 +17,7 @@ import java.util.List;
 public class SectionTemplate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     private String name;
@@ -24,6 +25,8 @@ public class SectionTemplate {
 
     @ElementCollection
     private List<String> requiredFields;
+    @OneToMany(mappedBy = "sectionTemplate", cascade = CascadeType.ALL)
+    private List<Section> sections;
     @ManyToOne
     @JoinColumn(name = "report_template_id")
     private ReportTemplate reportTemplate;

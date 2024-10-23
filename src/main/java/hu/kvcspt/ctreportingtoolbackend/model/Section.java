@@ -24,15 +24,15 @@ public class Section {
     @MapKeyColumn(name = "field_name")
     @Column(name = "field_value")
     private Map<String, String> fieldContent;
-    @ManyToOne
-    @JoinColumn(name = "section_template_id")
-    private SectionTemplate template;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "section_template_id", referencedColumnName = "id")
+    private SectionTemplate sectionTemplate;
     @ManyToOne
     @JoinColumn(name = "report_id")
     private Report report;
 
     public void setFieldContent(String field, String value) {
-        if (template.getRequiredFields().contains(field)) {
+        if (sectionTemplate.getRequiredFields().contains(field)) {
             fieldContent.put(field, value);
         } else {
             throw new IllegalArgumentException("Field " + field + " is not required for this section.");
@@ -40,7 +40,7 @@ public class Section {
     }
     public String getContent() {
         StringBuilder contentBuilder = new StringBuilder();
-        for (String field : template.getRequiredFields()) {
+        for (String field : sectionTemplate.getRequiredFields()) {
             contentBuilder.append(field)
                     .append(": ")
                     .append(fieldContent.getOrDefault(field, "Not Provided"))
