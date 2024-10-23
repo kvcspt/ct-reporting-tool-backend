@@ -32,6 +32,8 @@ public class User implements UserDetails {
     private String title;
     @Enumerated(EnumType.STRING)
     private Role role;
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Report> reports;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
