@@ -24,8 +24,9 @@ public class ReportTemplate {
     private Long id;
     private String name;
 
-    @OneToMany(mappedBy = "reportTemplate",cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SectionTemplate> sectionTemplates;
+    @OneToMany(mappedBy = "reportTemplate", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SectionTemplate> sectionTemplates = new ArrayList<>();
+
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Report> reports;
     public StructureDefinition toFhirStructureDefinition() {

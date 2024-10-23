@@ -1,5 +1,6 @@
 package hu.kvcspt.ctreportingtoolbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +18,6 @@ import java.util.List;
 public class SectionTemplate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
     private String name;
@@ -25,9 +25,13 @@ public class SectionTemplate {
 
     @ElementCollection
     private List<String> requiredFields;
+
     @OneToMany(mappedBy = "sectionTemplate", cascade = CascadeType.ALL)
-    private List<Section> sections;
+    @JsonIgnore
+    private List<Section> section;
+
     @ManyToOne
     @JoinColumn(name = "report_template_id")
+    @JsonIgnore
     private ReportTemplate reportTemplate;
 }

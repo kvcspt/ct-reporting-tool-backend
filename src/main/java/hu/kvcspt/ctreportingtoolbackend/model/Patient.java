@@ -1,5 +1,6 @@
 package hu.kvcspt.ctreportingtoolbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import hu.kvcspt.ctreportingtoolbackend.enums.Gender;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,13 +30,21 @@ public class Patient {
     private LocalDate dateOfBirth;
     @Enumerated(EnumType.STRING)
     private Gender gender;
-
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Report> reports;
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Scan> scans;
     private String phoneNumber;
     private String address;
+
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Report> reports;
+
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Scan> scans;
+    @JsonIgnore
+    public String getAddress() {
+        return address;
+    }
+
     public org.hl7.fhir.r5.model.Patient toFhirPatient() {
         org.hl7.fhir.r5.model.Patient fhirPatient = new org.hl7.fhir.r5.model.Patient();
 
