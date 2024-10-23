@@ -27,6 +27,7 @@ public class Patient {
     private Long id;
     private String name;
     private LocalDate dateOfBirth;
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
