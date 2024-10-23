@@ -3,6 +3,7 @@ package hu.kvcspt.ctreportingtoolbackend.model;
 import hu.kvcspt.ctreportingtoolbackend.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hl7.fhir.r5.model.HumanName;
@@ -17,6 +18,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "users")
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails {
