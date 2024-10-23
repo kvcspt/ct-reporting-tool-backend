@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController("/api/section-templates")
+@RestController
+@RequestMapping("/api/section-templates")
 @AllArgsConstructor
 public final class SectionTemplateController {
     private final SectionTemplateService sectionTemplateService;
