@@ -1,6 +1,5 @@
 package hu.kvcspt.ctreportingtoolbackend.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +10,9 @@ import org.hl7.fhir.r5.model.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Data
@@ -34,15 +35,17 @@ public class Report {
     @JoinColumn(name = "user_id")
     private User createdBy;
 
-    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> sections;
+    @ElementCollection
+    @CollectionTable(name = "report_sections", joinColumns = @JoinColumn(name = "report_id"))
+    @MapKeyColumn(name = "section_name")
+    @Column(name = "section_value")
+    private Map<String, String> sections = new HashMap<>();
 
     @ManyToOne
     @JoinColumn(name = "report_template_id")
-    @JsonIgnore
     private ReportTemplate template;
 
-    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Scan> scans;
 
     public DiagnosticReport toDiagnosticReport(){
@@ -53,18 +56,18 @@ public class Report {
         diagnosticReport.setIssued(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
         diagnosticReport.addPerformer(new Reference(createdBy.toPractitioner()));
 
-        for (Section section : getSections()) {
-            if (section.getTitle().equals("Findings")) {
+        for (Map.Entry<String, String> section : getSections().entrySet()) {
+            if (section.getKey().equals("Findings")) {
                 Observation finding = new Observation();
                 finding.setCode(new CodeableConcept().setText("Imaging Findings"));
-                finding.setValue(new CodeableConcept().setText(section.getContent()));
+                finding.setValue(new CodeableConcept().setText(section.getValue()));
                 diagnosticReport.addResult(new Reference(finding));
             }
         }
 
-        for (Section section : getSections()) {
-            if (section.getTitle().equals("Conclusion")) {
-                diagnosticReport.setConclusion(section.getContent());
+        for (Map.Entry<String, String> section : getSections().entrySet()) {
+            if (section.getKey().equals("Conclusion")) {
+                diagnosticReport.setConclusion(section.getValue());
             }
         }
 
@@ -80,20 +83,22 @@ public class Report {
         diagnosticReport.setSubject(new Reference(fhirPatient));
         diagnosticReport.setIssued(Date.from(createdDate.atZone(ZoneId.systemDefault()).toInstant()));
 
-        List<ImagingStudy> imagingStudies = scans.stream().map(Scan::toImagingStudy).toList();
-        for (ImagingStudy study : imagingStudies) {
-            diagnosticReport.addStudy(new Reference(study));
+        if(scans != null){
+            List<ImagingStudy> imagingStudies = scans.stream().map(Scan::toImagingStudy).toList();
+            for (ImagingStudy study : imagingStudies) {
+                diagnosticReport.addStudy(new Reference(study));
+            }
         }
 
         // Add findings and conclusion sections
-        for (Section section : sections) {
-            if (section.getTitle().equalsIgnoreCase("Findings")) {
+        for (Map.Entry<String,String> section : getSections().entrySet()) {
+            if (section.getKey().equalsIgnoreCase("Findings")) {
                 Observation finding = new Observation();
                 finding.setCode(new CodeableConcept().setText("Imaging Findings"));
-                finding.setValue(new CodeableConcept().setText(section.getContent()));
+                finding.setValue(new CodeableConcept().setText(section.getValue()));
                 diagnosticReport.addResult(new Reference(finding));
-            } else if (section.getTitle().equalsIgnoreCase("Conclusion")) {
-                diagnosticReport.setConclusion(section.getContent());
+            } else if (section.getKey().equalsIgnoreCase("Conclusion")) {
+                diagnosticReport.setConclusion(section.getValue());
             }
         }
 

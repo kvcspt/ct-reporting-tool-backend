@@ -10,7 +10,9 @@ import org.hl7.fhir.r5.model.Enumerations;
 import org.hl7.fhir.r5.model.StructureDefinition;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "report_templates")
@@ -24,8 +26,11 @@ public class ReportTemplate {
     private Long id;
     private String name;
 
-    @OneToMany(mappedBy = "reportTemplate", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SectionTemplate> sectionTemplates = new ArrayList<>();
+    @ElementCollection
+    @CollectionTable(name = "template_sections", joinColumns = @JoinColumn(name = "template_id"))
+    @MapKeyColumn(name = "section_name")
+    @Column(name = "section_value")
+    private Map<String, String> sections = new HashMap<>();
 
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Report> reports;
@@ -48,10 +53,10 @@ public class ReportTemplate {
     private List<ElementDefinition> getElementDefinitions() {
         List<ElementDefinition> elementDefinitions = new ArrayList<>();
 
-        for (SectionTemplate sectionTemplate : sectionTemplates) {
+        for (Map.Entry<String,String> sectionTemplate : getSections().entrySet()) {
             ElementDefinition elementDefinition = new ElementDefinition();
-            elementDefinition.setPath(sectionTemplate.getName());
-            elementDefinition.setShort(sectionTemplate.getDescription());
+            elementDefinition.setPath(sectionTemplate.getKey());
+            elementDefinition.setShort(sectionTemplate.getValue());
 
             elementDefinitions.add(elementDefinition);
         }
