@@ -1,5 +1,6 @@
 package hu.kvcspt.ctreportingtoolbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,18 +24,22 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
+    private LocalDateTime createdDate;
+
     @ManyToOne
     @JoinColumn(name = "patient_id")
     private Patient patient;
-    private LocalDateTime createdDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User createdBy;
+
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections;
+
     @ManyToOne
     @JoinColumn(name = "report_template_id")
+    @JsonIgnore
     private ReportTemplate template;
 
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)

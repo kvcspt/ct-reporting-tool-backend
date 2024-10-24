@@ -24,10 +24,11 @@ public class ReportTemplate {
     private Long id;
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "section_template_id")
-    private List<SectionTemplate> sectionTemplates;
+    @OneToMany(mappedBy = "reportTemplate", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SectionTemplate> sectionTemplates = new ArrayList<>();
 
+    @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Report> reports;
     public StructureDefinition toFhirStructureDefinition() {
         StructureDefinition structureDefinition = new StructureDefinition();
 

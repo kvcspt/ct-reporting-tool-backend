@@ -1,5 +1,6 @@
 package hu.kvcspt.ctreportingtoolbackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import hu.kvcspt.ctreportingtoolbackend.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,10 @@ public class User implements UserDetails {
     private String title;
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Report> reports;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
