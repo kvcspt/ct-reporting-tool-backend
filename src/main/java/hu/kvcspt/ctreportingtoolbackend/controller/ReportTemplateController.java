@@ -1,7 +1,7 @@
 package hu.kvcspt.ctreportingtoolbackend.controller;
 
+import hu.kvcspt.ctreportingtoolbackend.dto.ReportTemplateDTO;
 import hu.kvcspt.ctreportingtoolbackend.logic.ReportTemplateService;
-import hu.kvcspt.ctreportingtoolbackend.model.ReportTemplate;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,28 +14,28 @@ public final class ReportTemplateController {
     private final ReportTemplateService reportTemplateService;
 
     @GetMapping
-    public List<ReportTemplate> getAllReportTemplates() {
+    public List<ReportTemplateDTO> getAllReportTemplates() {
         return reportTemplateService.getAllReportTemplates();
     }
 
     @GetMapping("/{id}")
-    public ReportTemplate getReportTemplateById(@PathVariable Long id) {
+    public ReportTemplateDTO getReportTemplateById(@PathVariable Long id) {
         return reportTemplateService.getReportTemplateById(id);
     }
 
     @PutMapping("/{id}")
-    public ReportTemplate updateReportTemplate(@PathVariable Long id, @RequestBody ReportTemplate reportTemplate) {
+    public ReportTemplateDTO updateReportTemplate(@PathVariable Long id, @RequestBody ReportTemplateDTO reportTemplate) {
         reportTemplate.setId(id);
         return reportTemplateService.updateReportTemplate(reportTemplate);
     }
 
     @PostMapping
-    public ReportTemplate createReportTemplate(@RequestBody ReportTemplate reportTemplate) {
+    public ReportTemplateDTO createReportTemplate(@RequestBody ReportTemplateDTO reportTemplate) {
         return reportTemplateService.createReportTemplate(reportTemplate);
     }
 
     @DeleteMapping("/{id}")
     public void deleteReportTemplate(@PathVariable Long id) {
-        reportTemplateService.deleteReportTemplate(ReportTemplate.builder().id(id).build());
+        reportTemplateService.deleteReportTemplate(ReportTemplateDTO.builder().id(id).build());
     }
 }
