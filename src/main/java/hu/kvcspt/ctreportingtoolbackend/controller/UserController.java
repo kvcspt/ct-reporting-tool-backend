@@ -1,7 +1,7 @@
 package hu.kvcspt.ctreportingtoolbackend.controller;
 
+import hu.kvcspt.ctreportingtoolbackend.dto.UserDTO;
 import hu.kvcspt.ctreportingtoolbackend.logic.UserService;
-import hu.kvcspt.ctreportingtoolbackend.model.User;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,28 +14,28 @@ public final class UserController {
     private final UserService userService;
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserDTO> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
+    public UserDTO getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User user) {
+    public UserDTO updateUser(@PathVariable Long id, @RequestBody UserDTO user) {
         user.setId(id);
         return userService.updateUser(user);
     }
 
     @PostMapping
-    public User addUser(@RequestBody User user) {
+    public UserDTO addUser(@RequestBody UserDTO user) {
         return userService.createUser(user);
     }
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
-        userService.deleteUser(User.builder().id(id).build());
+        userService.deleteUser(UserDTO.builder().id(id).build());
     }
 }
