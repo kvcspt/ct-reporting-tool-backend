@@ -1,6 +1,5 @@
 package hu.kvcspt.ctreportingtoolbackend.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import hu.kvcspt.ctreportingtoolbackend.enums.Gender;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,6 +13,7 @@ import org.hl7.fhir.r5.model.HumanName;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,17 +33,11 @@ public class Patient {
     private String phoneNumber;
     private String address;
 
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<Report> reports;
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Report> reports = new ArrayList<>();
 
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Scan> scans;
-    @JsonIgnore
-    public String getAddress() {
-        return address;
-    }
 
     public org.hl7.fhir.r5.model.Patient toFhirPatient() {
         org.hl7.fhir.r5.model.Patient fhirPatient = new org.hl7.fhir.r5.model.Patient();

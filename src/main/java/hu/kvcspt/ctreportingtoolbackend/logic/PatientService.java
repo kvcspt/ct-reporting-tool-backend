@@ -1,5 +1,6 @@
 package hu.kvcspt.ctreportingtoolbackend.logic;
 
+import hu.kvcspt.ctreportingtoolbackend.dto.PatientDTO;
 import hu.kvcspt.ctreportingtoolbackend.model.Patient;
 import hu.kvcspt.ctreportingtoolbackend.model.repository.PatientRepository;
 import lombok.AllArgsConstructor;
@@ -12,25 +13,50 @@ import java.util.List;
 @Log4j2
 public class PatientService {
     private PatientRepository patientRepository;
-    public List<Patient> getAllPatients(){
-        return patientRepository.findAll();
+    public List<PatientDTO> getAllPatients(){
+        List<Patient> patients = patientRepository.findAll();
+        return patients.stream().map(this::convertToDTO).toList();
     }
-    public Patient getPatientById(Long id){
-        return patientRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Patient ID does not exist!"));
+    public PatientDTO getPatientById(Long id){
+        Patient patient = patientRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Patient does not exist!"));
+        return convertToDTO(patient);
     }
-    public Patient updatePatient(Patient patient){
-        if(patientRepository.existsById(patient.getId())){
-            return patientRepository.save(patient);
+    public PatientDTO updatePatient(PatientDTO patientDTO) {
+        if (patientRepository.existsById(patientDTO.getId())) {
+            Patient patient = convertToEntity(patientDTO);
+            return convertToDTO(patientRepository.save(patient));
         }
         throw new IllegalArgumentException("Patient not found!");
     }
 
-    public Patient createPatient(Patient patient){
-        return patientRepository.save(patient);
+    public PatientDTO createPatient(PatientDTO patientDTO){
+        Patient patient = convertToEntity(patientDTO);
+        return convertToDTO(patientRepository.save(patient));
     }
 
-    public void deletePatient(Patient patient){
-        patientRepository.delete(patient);
+    public void deletePatient(PatientDTO patientDTO){
+        patientRepository.delete(convertToEntity(patientDTO));
         log.debug("Patient is deleted successfully");
+    }
+    public Patient convertToEntity(PatientDTO patientDTO) {
+        return Patient.builder()
+                .id(patientDTO.getId())
+                .name(patientDTO.getName())
+                .dateOfBirth(patientDTO.getDateOfBirth())
+                .gender(patientDTO.getGender())
+                .phoneNumber(patientDTO.getPhoneNumber())
+                .address(patientDTO.getAddress())
+                .build();
+    }
+
+    public PatientDTO convertToDTO(Patient patient) {
+        return PatientDTO.builder()
+                .id(patient.getId())
+                .name(patient.getName())
+                .dateOfBirth(patient.getDateOfBirth())
+                .gender(patient.getGender())
+                .phoneNumber(patient.getPhoneNumber())
+                .address(patient.getAddress())
+                .build();
     }
 }
