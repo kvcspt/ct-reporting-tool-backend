@@ -1,5 +1,6 @@
 package hu.kvcspt.ctreportingtoolbackend.logic;
 
+import hu.kvcspt.ctreportingtoolbackend.dto.ScanDTO;
 import hu.kvcspt.ctreportingtoolbackend.model.Scan;
 import hu.kvcspt.ctreportingtoolbackend.model.repository.ScanRepository;
 import lombok.AllArgsConstructor;
@@ -12,25 +13,55 @@ import java.util.List;
 @Log4j2
 public class ScanService {
     private ScanRepository scanRepository;
-    public List<Scan> getAllScans(){
-        return scanRepository.findAll();
+    public List<ScanDTO> getAllScans(){
+        List<Scan> scans = scanRepository.findAll();
+        return scans.stream().map(this::convertToDTO).toList();
     }
-    public Scan getScanById(Long id){
-        return scanRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Scan ID does not exist!"));
+    public ScanDTO getScanById(Long id){
+        Scan scan = scanRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Patient ID does not exist!"));
+        return convertToDTO(scan);
     }
-    public Scan updateScan(Scan scan){
-        if(scanRepository.existsById(scan.getId())){
-            return scanRepository.save(scan);
+    public ScanDTO updateScan(ScanDTO scanDTO){
+        if (scanRepository.existsById(scanDTO.getId())) {
+            Scan report = convertToEntity(scanDTO);
+            return convertToDTO(scanRepository.save(report));
         }
         throw new IllegalArgumentException("Scan not found!");
     }
 
-    public Scan createScan(Scan scan){
-        return scanRepository.save(scan);
+    public ScanDTO createScan(ScanDTO scanDTO){
+        Scan report = convertToEntity(scanDTO);
+        return convertToDTO(scanRepository.save(report));
     }
 
-    public void deleteScan(Scan scan){
-        scanRepository.delete(scan);
+    public void deleteScan(ScanDTO scanDTO){
+        scanRepository.delete(convertToEntity(scanDTO));
         log.debug("Scan is deleted successfully");
+    }
+    private ScanDTO convertToDTO(Scan scan) {
+        if (scan == null) return null;
+
+        return ScanDTO.builder()
+                .id(scan.getId())
+                .modality(scan.getModality())
+                .scanDate(scan.getScanDate())
+                .description(scan.getDescription())
+                .bodyPart(scan.getBodyPart())
+                .patientId(scan.getPatient() != null ? scan.getPatient().getId() : null)
+                .reportId(scan.getReport() != null ? scan.getReport().getId() : null)
+                .build();
+    }
+
+    private Scan convertToEntity(ScanDTO scanDTO) {
+        if (scanDTO == null) return null;
+
+        Scan scan = new Scan();
+        scan.setId(scanDTO.getId());
+        scan.setModality(scanDTO.getModality());
+        scan.setScanDate(scanDTO.getScanDate());
+        scan.setDescription(scanDTO.getDescription());
+        scan.setBodyPart(scanDTO.getBodyPart());
+
+        return scan;
     }
 }
