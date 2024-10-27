@@ -54,6 +54,7 @@ public class UserService {
                 .id(userDTO.getId())
                 .name(userDTO.getName())
                 .userName(userDTO.getUserName())
+                .password(userDTO.getPassword())
                 .role(userDTO.getRole())
                 .title(userDTO.getTitle())
                 .build();
