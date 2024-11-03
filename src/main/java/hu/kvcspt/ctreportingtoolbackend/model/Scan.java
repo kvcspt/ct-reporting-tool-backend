@@ -9,7 +9,8 @@ import org.hl7.fhir.r5.model.CodeableConcept;
 import org.hl7.fhir.r5.model.Coding;
 import org.hl7.fhir.r5.model.ImagingStudy;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -24,7 +25,7 @@ public class Scan {
     private Long id;
 
     private String modality;
-    private LocalDateTime scanDate;
+    private LocalDate scanDate;
     private String description;
     private String bodyPart;
     @ManyToOne
@@ -49,7 +50,7 @@ public class Scan {
 
         imagingStudy.setModality(List.of(modalityConcept));
 
-        imagingStudy.setStarted(java.util.Date.from(scanDate.atZone(java.time.ZoneId.systemDefault()).toInstant()));
+        imagingStudy.setStarted(java.util.Date.from(Instant.from(scanDate)));
 
         imagingStudy.setDescription(description);
 
