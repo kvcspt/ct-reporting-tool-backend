@@ -39,6 +39,10 @@ public class PatientService {
         return convertToDTO(patientRepository.save(patient));
     }
 
+    public Patient createPatient(Patient patient){
+        return patientRepository.save(patient);
+    }
+
     public void deletePatient(PatientDTO patientDTO){
         patientRepository.delete(convertToEntity(patientDTO));
         log.debug("Patient is deleted successfully");

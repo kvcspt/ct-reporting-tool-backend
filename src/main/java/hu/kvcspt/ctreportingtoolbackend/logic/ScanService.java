@@ -34,8 +34,13 @@ public class ScanService {
     }
 
     public ScanDTO createScan(ScanDTO scanDTO){
-        Scan report = convertToEntity(scanDTO);
-        return convertToDTO(scanRepository.save(report));
+        Scan scan = convertToEntity(scanDTO);
+        return convertToDTO(scanRepository.save(scan));
+    }
+
+    public Scan createScan(Scan scan){
+        patientService.createPatient(scan.getPatient());
+        return scanRepository.save(scan);
     }
 
     public void deleteScan(ScanDTO scanDTO){
