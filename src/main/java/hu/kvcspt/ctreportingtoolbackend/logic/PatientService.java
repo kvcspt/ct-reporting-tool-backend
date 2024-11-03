@@ -17,10 +17,15 @@ public class PatientService {
         List<Patient> patients = patientRepository.findAll();
         return patients.stream().map(this::convertToDTO).toList();
     }
-    public PatientDTO getPatientById(Long id){
+    public PatientDTO getPatientDTOById(Long id){
         Patient patient = patientRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Patient does not exist!"));
         return convertToDTO(patient);
     }
+
+    public Patient getPatientById(Long id){
+        return patientRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Patient does not exist!"));
+    }
+
     public PatientDTO updatePatient(PatientDTO patientDTO) {
         if (patientRepository.existsById(patientDTO.getId())) {
             Patient patient = convertToEntity(patientDTO);

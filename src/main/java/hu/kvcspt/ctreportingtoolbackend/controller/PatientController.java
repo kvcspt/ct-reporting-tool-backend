@@ -20,7 +20,7 @@ public final class PatientController {
 
     @GetMapping("/{id}")
     public PatientDTO getPatientById(@PathVariable Long id) {
-        return patientService.getPatientById(id);
+        return patientService.getPatientDTOById(id);
     }
 
     @PutMapping("/{id}")

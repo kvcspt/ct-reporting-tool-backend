@@ -1,6 +1,7 @@
 package hu.kvcspt.ctreportingtoolbackend.logic;
 
 import hu.kvcspt.ctreportingtoolbackend.dto.ScanDTO;
+import hu.kvcspt.ctreportingtoolbackend.model.Patient;
 import hu.kvcspt.ctreportingtoolbackend.model.Scan;
 import hu.kvcspt.ctreportingtoolbackend.model.repository.ScanRepository;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,8 @@ import java.util.List;
 @Log4j2
 public class ScanService {
     private ScanRepository scanRepository;
+    private PatientService patientService;
+    private ReportService reportService;
     public List<ScanDTO> getAllScans(){
         List<Scan> scans = scanRepository.findAll();
         return scans.stream().map(this::convertToDTO).toList();
@@ -62,6 +65,10 @@ public class ScanService {
         scan.setDescription(scanDTO.getDescription());
         scan.setBodyPart(scanDTO.getBodyPart());
 
+        if(scanDTO.getPatientId() != null){
+            Patient patient = patientService.getPatientById(scanDTO.getPatientId());
+            scan.setPatient(patient);
+        }
         return scan;
     }
 }
