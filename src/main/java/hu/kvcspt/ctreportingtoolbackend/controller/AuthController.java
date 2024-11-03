@@ -7,6 +7,7 @@ import hu.kvcspt.ctreportingtoolbackend.model.User;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,9 +24,8 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("login")
-    public ResponseEntity<String> loginUser(@RequestBody User user) {
-        authService.loadUserByUsername(user.getUsername());
-        return new ResponseEntity<>("User logged in successfully", HttpStatus.OK);
+    public ResponseEntity<UserDetails> loginUser(@RequestBody User user) {
+        return new ResponseEntity<>(authService.loadUserByUsername(user.getUsername()), HttpStatus.OK) ;
     }
 
     @PostMapping("register")
