@@ -25,9 +25,13 @@ public class ReportService {
         List<Report> patients = reportRepository.findAll();
         return patients.stream().map(this::convertToDTO).toList();
     }
-    public ReportDTO getReportById(Long id){
-        Report report = reportRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Patient ID does not exist!"));
+    public ReportDTO getReportDTOById(Long id){
+        Report report = reportRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Report ID does not exist!"));
         return convertToDTO(report);
+    }
+
+    public Report getReportById(Long id){
+        return reportRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Report ID does not exist!"));
     }
     public ReportDTO updateReport(ReportDTO reportDTO) {
         if (reportRepository.existsById(reportDTO.getId())) {
@@ -47,7 +51,7 @@ public class ReportService {
         log.debug("Report is deleted successfully");
     }
     public String generateDiagnosticReport(Long reportId) {
-        Report report = convertToEntity(getReportById(reportId));
+        Report report = convertToEntity(getReportDTOById(reportId));
         DiagnosticReport diagnosticReport = report.toFhirDiagnosticReport();
         FhirContext ctxR5 = FhirContext.forR5();
         IParser jsonParser = ctxR5.newJsonParser();
@@ -80,7 +84,7 @@ public class ReportService {
         report.setTitle(reportDTO.getTitle());
         report.setCreatedDate(reportDTO.getCreatedDate());
         if (reportDTO.getPatientId() != null) {
-            Patient patient = patientService.convertToEntity(patientService.getPatientById(reportDTO.getPatientId()));
+            Patient patient = patientService.convertToEntity(patientService.getPatientDTOById(reportDTO.getPatientId()));
             report.setPatient(patient);
         }
         report.setSections(reportDTO.getSections());

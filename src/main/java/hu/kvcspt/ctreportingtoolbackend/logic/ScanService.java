@@ -2,6 +2,7 @@ package hu.kvcspt.ctreportingtoolbackend.logic;
 
 import hu.kvcspt.ctreportingtoolbackend.dto.ScanDTO;
 import hu.kvcspt.ctreportingtoolbackend.model.Patient;
+import hu.kvcspt.ctreportingtoolbackend.model.Report;
 import hu.kvcspt.ctreportingtoolbackend.model.Scan;
 import hu.kvcspt.ctreportingtoolbackend.model.repository.ScanRepository;
 import lombok.AllArgsConstructor;
@@ -64,7 +65,10 @@ public class ScanService {
         scan.setScanDate(scanDTO.getScanDate());
         scan.setDescription(scanDTO.getDescription());
         scan.setBodyPart(scanDTO.getBodyPart());
-
+        if(scanDTO.getReportId() != null){
+            Report report = reportService.getReportById(scanDTO.getReportId());
+            scan.setReport(report);
+        }
         if(scanDTO.getPatientId() != null){
             Patient patient = patientService.getPatientById(scanDTO.getPatientId());
             scan.setPatient(patient);

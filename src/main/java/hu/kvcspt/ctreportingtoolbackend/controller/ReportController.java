@@ -20,7 +20,7 @@ public final class ReportController {
 
     @GetMapping("/{id}")
     public ReportDTO getReportById(@PathVariable Long id) {
-        return reportService.getReportById(id);
+        return reportService.getReportDTOById(id);
     }
 
     @PutMapping("/{id}")
