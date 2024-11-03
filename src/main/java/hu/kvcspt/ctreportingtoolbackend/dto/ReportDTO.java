@@ -19,7 +19,7 @@ public class ReportDTO {
     private Long id;
     private String title;
     private LocalDateTime createdDate;
-    private Long patientId;
+    private String patientId;
     private Long createdById;
     @NotNull
     private Long templateId;
