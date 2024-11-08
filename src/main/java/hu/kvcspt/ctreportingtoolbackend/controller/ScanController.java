@@ -62,6 +62,7 @@ public final class ScanController {
                 String patientName = dicomObject.getString(Tag.PatientName);
                 String patientSex = dicomObject.getString(Tag.PatientSex);
                 String patientId = dicomObject.getString(Tag.PatientID);
+                String bodyPart = dicomObject.getString(Tag.BodyPartExamined);
                 Gender gender = "M".equals(patientSex) ? Gender.MALE : "F".equals(patientSex) ? Gender.FEMALE : Gender.OTHER;
                 Patient patient = Patient.builder()
                         .id(patientId)
@@ -74,6 +75,7 @@ public final class ScanController {
                         .description(description)
                         .modality(modality)
                         .patient(patient)
+                        .bodyPart(bodyPart)
                         .build();
                 createdScans.add(scanService.createScan(scan));
             } catch (IOException e) {
