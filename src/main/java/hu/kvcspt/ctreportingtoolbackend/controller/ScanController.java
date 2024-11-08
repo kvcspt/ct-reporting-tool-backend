@@ -62,10 +62,11 @@ public final class ScanController {
                 String patientName = dicomObject.getString(Tag.PatientName);
                 String patientSex = dicomObject.getString(Tag.PatientSex);
                 String patientId = dicomObject.getString(Tag.PatientID);
+                Gender gender = "M".equals(patientSex) ? Gender.MALE : "F".equals(patientSex) ? Gender.FEMALE : Gender.OTHER;
                 Patient patient = Patient.builder()
                         .id(patientId)
                         .name(patientName)
-                        .gender(patientSex.equals("M") ? Gender.MALE : patientSex.equals("F") ? Gender.FEMALE : Gender.OTHER )
+                        .gender(gender)
                         .dateOfBirth(GeneralUtils.dateToLocalDate(patientDateOfBirth))
                         .build();
                 Scan scan = Scan.builder()
