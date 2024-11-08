@@ -6,6 +6,6 @@ import java.util.Date;
 
 public class GeneralUtils {
     public static LocalDate dateToLocalDate(Date date){
-        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return date == null ? null : date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 }
