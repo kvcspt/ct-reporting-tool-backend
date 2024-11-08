@@ -43,9 +43,13 @@ public class ScanService {
         return scanRepository.save(scan);
     }
 
-    public void deleteScan(ScanDTO scanDTO){
-        scanRepository.delete(convertToEntity(scanDTO));
-        log.debug("Scan is deleted successfully");
+    public void deleteScan(Long id){
+        if (scanRepository.existsById(id)) {
+            scanRepository.deleteById(id);
+            log.debug("Scan is deleted successfully");
+        } else {
+            log.debug("Scan with ID " + id + " not found.");
+        }
     }
     private ScanDTO convertToDTO(Scan scan) {
         if (scan == null) return null;

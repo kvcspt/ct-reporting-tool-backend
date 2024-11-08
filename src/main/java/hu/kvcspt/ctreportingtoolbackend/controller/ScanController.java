@@ -92,6 +92,6 @@ public final class ScanController {
 
     @DeleteMapping("/{id}")
     public void deleteScan(@PathVariable Long id) {
-        scanService.deleteScan(ScanDTO.builder().id(id).build());
+        scanService.deleteScan(id);
     }
 }
