@@ -45,7 +45,7 @@ public class Report {
     @JoinColumn(name = "report_template_id")
     private ReportTemplate template;
 
-    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(targetEntity = Scan.class)
     private List<Scan> scans;
 
     public DiagnosticReport toDiagnosticReport(){
