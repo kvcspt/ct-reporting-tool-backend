@@ -34,13 +34,22 @@ public class ScanService {
     }
 
     public ScanDTO createScan(ScanDTO scanDTO){
-        Scan report = convertToEntity(scanDTO);
-        return convertToDTO(scanRepository.save(report));
+        Scan scan = convertToEntity(scanDTO);
+        return convertToDTO(scanRepository.save(scan));
     }
 
-    public void deleteScan(ScanDTO scanDTO){
-        scanRepository.delete(convertToEntity(scanDTO));
-        log.debug("Scan is deleted successfully");
+    public Scan createScan(Scan scan){
+        patientService.createPatient(scan.getPatient());
+        return scanRepository.save(scan);
+    }
+
+    public void deleteScan(Long id){
+        if (scanRepository.existsById(id)) {
+            scanRepository.deleteById(id);
+            log.debug("Scan is deleted successfully");
+        } else {
+            log.debug("Scan with ID " + id + " not found.");
+        }
     }
     private ScanDTO convertToDTO(Scan scan) {
         if (scan == null) return null;

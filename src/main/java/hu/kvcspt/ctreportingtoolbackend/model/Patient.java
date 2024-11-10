@@ -33,10 +33,10 @@ public class Patient {
     private String phoneNumber;
     private String address;
 
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private List<Report> reports = new ArrayList<>();
 
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private List<Scan> scans;
 
     public org.hl7.fhir.r5.model.Patient toFhirPatient() {
