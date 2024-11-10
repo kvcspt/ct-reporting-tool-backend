@@ -17,5 +17,5 @@ public class ReportTemplateDTO {
     private Long id;
     private String name;
     private Map<String, String> sections = new HashMap<>();
-    private List<Long> reportIds;
+    private List<ReportDTO> reports;
 }
