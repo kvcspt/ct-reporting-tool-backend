@@ -36,6 +36,6 @@ public final class ReportTemplateController {
 
     @DeleteMapping("/{id}")
     public void deleteReportTemplate(@PathVariable Long id) {
-        reportTemplateService.deleteReportTemplate(ReportTemplateDTO.builder().id(id).build());
+        reportTemplateService.deleteReportTemplate(id);
     }
 }
