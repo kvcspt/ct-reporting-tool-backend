@@ -36,9 +36,13 @@ public class ReportTemplateService {
         return convertToDTO(reportTemplateRepository.save(report));
     }
 
-    public void deleteReportTemplate(ReportTemplateDTO reportTemplateDTO){
-        reportTemplateRepository.delete(convertToEntity(reportTemplateDTO));
-        log.debug("ReportTemplate is deleted successfully");
+    public void deleteReportTemplate(Long id){
+        if (reportTemplateRepository.existsById(id)) {
+            reportTemplateRepository.deleteById(id);
+            log.debug("ReportTemplate is deleted successfully");
+        } else {
+            log.debug("ReportTemplate with ID " + id + " not found.");
+        }
     }
 
     private ReportTemplateDTO convertToDTO(ReportTemplate reportTemplate) {
