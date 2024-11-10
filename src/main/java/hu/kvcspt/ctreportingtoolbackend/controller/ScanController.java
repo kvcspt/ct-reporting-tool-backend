@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/scans")
+@RequestMapping("api/scans")
 @AllArgsConstructor
 public final class ScanController {
 

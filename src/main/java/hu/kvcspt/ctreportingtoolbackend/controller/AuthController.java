@@ -15,20 +15,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("api/auth")
 @AllArgsConstructor
-public class AuthController {
+public final class AuthController {
 
     private AuthService authService;
     private PasswordEncoder passwordEncoder;
     private UserService userService;
 
-    @PostMapping("login")
+    @PostMapping("/login")
     public ResponseEntity<UserDetails> loginUser(@RequestBody User user) {
         return new ResponseEntity<>(authService.loadUserByUsername(user.getUsername()), HttpStatus.OK) ;
     }
 
-    @PostMapping("register")
+    @PostMapping("/register")
     public UserDTO addUser(@RequestBody UserDTO user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userService.createUser(user);

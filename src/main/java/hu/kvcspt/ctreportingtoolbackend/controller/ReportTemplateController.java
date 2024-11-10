@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/report-templates")
+@RequestMapping("api/report-templates")
 @AllArgsConstructor
 public final class ReportTemplateController {
     private final ReportTemplateService reportTemplateService;
