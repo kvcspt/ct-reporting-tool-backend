@@ -1,10 +1,10 @@
 package hu.kvcspt.ctreportingtoolbackend.controller;
 
+import hu.kvcspt.ctreportingtoolbackend.dto.PatientDTO;
 import hu.kvcspt.ctreportingtoolbackend.dto.ScanDTO;
 import hu.kvcspt.ctreportingtoolbackend.enums.Gender;
+import hu.kvcspt.ctreportingtoolbackend.logic.PatientService;
 import hu.kvcspt.ctreportingtoolbackend.logic.ScanService;
-import hu.kvcspt.ctreportingtoolbackend.model.Patient;
-import hu.kvcspt.ctreportingtoolbackend.model.Scan;
 import hu.kvcspt.ctreportingtoolbackend.util.DicomUtils;
 import hu.kvcspt.ctreportingtoolbackend.util.GeneralUtils;
 import lombok.AllArgsConstructor;
@@ -17,10 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/scans")
@@ -28,6 +25,7 @@ import java.util.Map;
 public final class ScanController {
 
     private final ScanService scanService;
+    private final PatientService patientService;
 
     @GetMapping
     public List<ScanDTO> getAllScans() {
@@ -48,7 +46,7 @@ public final class ScanController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadDicomFiles(@RequestParam("files") MultipartFile[] files) {
         List<String> errors = new ArrayList<>();
-        List<Scan> createdScans = new ArrayList<>();
+        List<ScanDTO> createdScans = new ArrayList<>();
 
         for (MultipartFile file : files) {
             try {
@@ -64,13 +62,22 @@ public final class ScanController {
                 String patientId = dicomObject.getString(Tag.PatientID);
                 String bodyPart = dicomObject.getString(Tag.BodyPartExamined);
                 Gender gender = "M".equals(patientSex) ? Gender.MALE : "F".equals(patientSex) ? Gender.FEMALE : Gender.OTHER;
-                Patient patient = Patient.builder()
-                        .id(patientId)
-                        .name(patientName)
-                        .gender(gender)
-                        .dateOfBirth(GeneralUtils.dateToLocalDate(patientDateOfBirth))
-                        .build();
-                Scan scan = Scan.builder()
+
+                Optional<PatientDTO> existingPatient = patientService.getPatientById(patientId);
+                PatientDTO patient;
+                if (existingPatient.isPresent()) {
+                    patient = existingPatient.get();
+                } else {
+                    patient = PatientDTO.builder()
+                            .id(patientId)
+                            .name(patientName)
+                            .gender(gender)
+                            .dateOfBirth(GeneralUtils.dateToLocalDate(patientDateOfBirth))
+                            .build();
+                    patientService.createPatient(patient);
+                }
+
+                ScanDTO scan = ScanDTO.builder()
                         .scanDate(GeneralUtils.dateToLocalDate(scanDate))
                         .description(description)
                         .modality(modality)
