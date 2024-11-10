@@ -1,87 +1,50 @@
 package hu.kvcspt.ctreportingtoolbackend.logic;
 
 import hu.kvcspt.ctreportingtoolbackend.dto.ScanDTO;
-import hu.kvcspt.ctreportingtoolbackend.model.Patient;
-import hu.kvcspt.ctreportingtoolbackend.model.Report;
+import hu.kvcspt.ctreportingtoolbackend.mapper.ScanMapper;
 import hu.kvcspt.ctreportingtoolbackend.model.Scan;
 import hu.kvcspt.ctreportingtoolbackend.model.repository.ScanRepository;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+
 @Service
 @AllArgsConstructor
 @Log4j2
 public class ScanService {
     private ScanRepository scanRepository;
-    private PatientService patientService;
-    private ReportService reportService;
+    //private PatientService patientService;
+    //private ReportService reportService;
     public List<ScanDTO> getAllScans(){
-        List<Scan> scans = scanRepository.findAll();
-        return scans.stream().map(this::convertToDTO).toList();
+        return scanRepository.findAll().stream().map(ScanMapper.INSTANCE::fromEntity).collect(Collectors.toList());
     }
-    public ScanDTO getScanById(Long id){
-        Scan scan = scanRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Patient ID does not exist!"));
-        return convertToDTO(scan);
+    public ScanDTO getScanById(@NonNull Long id){
+        return scanRepository.findById(id).map(ScanMapper.INSTANCE::fromEntity).orElseThrow(() -> new IllegalArgumentException("Scan with" + id +" ID does not exist!"));
     }
-    public ScanDTO updateScan(ScanDTO scanDTO){
-        if (scanRepository.existsById(scanDTO.getId())) {
-            Scan report = convertToEntity(scanDTO);
-            return convertToDTO(scanRepository.save(report));
-        }
-        throw new IllegalArgumentException("Scan not found!");
+    public ScanDTO updateScan(@NonNull ScanDTO scanDTO){
+        Scan scan = scanRepository
+                .findById(scanDTO.getId())
+                .orElse(ScanMapper.INSTANCE.toEntity(scanDTO));
+        return ScanMapper.INSTANCE.fromEntity(scanRepository.save(scan));
     }
 
-    public ScanDTO createScan(ScanDTO scanDTO){
-        Scan scan = convertToEntity(scanDTO);
-        return convertToDTO(scanRepository.save(scan));
+    public ScanDTO createScan(@NonNull ScanDTO scanDTO){
+        Scan scan = ScanMapper.INSTANCE.toEntity(scanDTO);
+        Scan savedUser = scanRepository.save(scan);
+        return ScanMapper.INSTANCE.fromEntity(savedUser);
     }
 
-    public Scan createScan(Scan scan){
-        patientService.createPatient(scan.getPatient());
-        return scanRepository.save(scan);
-    }
-
-    public void deleteScan(Long id){
+    public void deleteScan(@NonNull Long id){
         if (scanRepository.existsById(id)) {
             scanRepository.deleteById(id);
             log.debug("Scan is deleted successfully");
         } else {
-            log.debug("Scan with ID " + id + " not found.");
+            throw new NoSuchElementException("Scan with ID " + id + " not found.");
         }
-    }
-    private ScanDTO convertToDTO(Scan scan) {
-        if (scan == null) return null;
-
-        return ScanDTO.builder()
-                .id(scan.getId())
-                .modality(scan.getModality())
-                .scanDate(scan.getScanDate())
-                .description(scan.getDescription())
-                .bodyPart(scan.getBodyPart())
-                .patientId(scan.getPatient() != null ? scan.getPatient().getId() : null)
-                .reportId(scan.getReport() != null ? scan.getReport().getId() : null)
-                .build();
-    }
-
-    private Scan convertToEntity(ScanDTO scanDTO) {
-        if (scanDTO == null) return null;
-
-        Scan scan = new Scan();
-        scan.setId(scanDTO.getId());
-        scan.setModality(scanDTO.getModality());
-        scan.setScanDate(scanDTO.getScanDate());
-        scan.setDescription(scanDTO.getDescription());
-        scan.setBodyPart(scanDTO.getBodyPart());
-        if(scanDTO.getReportId() != null){
-            Report report = reportService.getReportById(scanDTO.getReportId());
-            scan.setReport(report);
-        }
-        if(scanDTO.getPatientId() != null){
-            Patient patient = patientService.getPatientById(scanDTO.getPatientId());
-            scan.setPatient(patient);
-        }
-        return scan;
     }
 }

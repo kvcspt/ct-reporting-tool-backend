@@ -1,67 +1,49 @@
 package hu.kvcspt.ctreportingtoolbackend.logic;
 
 import hu.kvcspt.ctreportingtoolbackend.dto.ReportTemplateDTO;
-import hu.kvcspt.ctreportingtoolbackend.model.Report;
+import hu.kvcspt.ctreportingtoolbackend.mapper.ReportTemplateMapper;
 import hu.kvcspt.ctreportingtoolbackend.model.ReportTemplate;
 import hu.kvcspt.ctreportingtoolbackend.model.repository.ReportTemplateRepository;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Log4j2
 @Service
 @AllArgsConstructor
 public class ReportTemplateService {
     private ReportTemplateRepository reportTemplateRepository;
     public List<ReportTemplateDTO> getAllReportTemplates(){
-        List<ReportTemplate> reportTemplates = reportTemplateRepository.findAll();
-        return reportTemplates.stream().map(this::convertToDTO).toList();
+        return reportTemplateRepository.findAll().stream().map(ReportTemplateMapper.INSTANCE::fromEntity).collect(Collectors.toList());
+
     }
-    public ReportTemplateDTO getReportTemplateById(Long id){
-        ReportTemplate reportTemplate = reportTemplateRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Patient ID does not exist!"));
-        return convertToDTO(reportTemplate);
-    }
-    public ReportTemplateDTO updateReportTemplate(ReportTemplateDTO reportTemplateDTO){
-        if (reportTemplateRepository.existsById(reportTemplateDTO.getId())) {
-            ReportTemplate report = convertToEntity(reportTemplateDTO);
-            return convertToDTO(reportTemplateRepository.save(report));
-        }
-        throw new IllegalArgumentException("ReportTemplate not found!");
+    public ReportTemplateDTO getReportTemplateById(@NonNull Long id){
+        return reportTemplateRepository.findById(id).map(ReportTemplateMapper.INSTANCE::fromEntity).orElseThrow(() -> new IllegalArgumentException("Template with" + id +" ID does not exist!"));
     }
 
-    public ReportTemplateDTO createReportTemplate(ReportTemplateDTO reportTemplateDTO){
-        ReportTemplate report = convertToEntity(reportTemplateDTO);
-        return convertToDTO(reportTemplateRepository.save(report));
+    public ReportTemplateDTO updateReportTemplate(@NonNull ReportTemplateDTO reportTemplateDTO){
+        ReportTemplate reportTemplate = reportTemplateRepository
+                .findById(reportTemplateDTO.getId())
+                .orElse(ReportTemplateMapper.INSTANCE.toEntity(reportTemplateDTO));
+        return ReportTemplateMapper.INSTANCE.fromEntity(reportTemplateRepository.save(reportTemplate));
     }
 
-    public void deleteReportTemplate(Long id){
+    public ReportTemplateDTO createReportTemplate(@NonNull ReportTemplateDTO reportTemplateDTO){
+        ReportTemplate reportTemplate = ReportTemplateMapper.INSTANCE.toEntity(reportTemplateDTO);
+        ReportTemplate savedTemplate = reportTemplateRepository.save(reportTemplate);
+        return ReportTemplateMapper.INSTANCE.fromEntity(savedTemplate);
+    }
+
+    public void deleteReportTemplate(@NonNull Long id){
         if (reportTemplateRepository.existsById(id)) {
             reportTemplateRepository.deleteById(id);
             log.debug("ReportTemplate is deleted successfully");
         } else {
             log.debug("ReportTemplate with ID " + id + " not found.");
         }
-    }
-
-    private ReportTemplateDTO convertToDTO(ReportTemplate reportTemplate) {
-        return ReportTemplateDTO.builder()
-                .id(reportTemplate.getId())
-                .name(reportTemplate.getName())
-                .sections(reportTemplate.getSections())
-                .reportIds(reportTemplate.getReports().stream()
-                        .map(Report::getId)
-                        .toList())
-                .build();
-    }
-
-    private ReportTemplate convertToEntity(ReportTemplateDTO reportTemplateDTO) {
-        return ReportTemplate.builder()
-                .id(reportTemplateDTO.getId())
-                .name(reportTemplateDTO.getName())
-                .sections(reportTemplateDTO.getSections())
-                .reports(new ArrayList<>())
-                .build();
     }
 }

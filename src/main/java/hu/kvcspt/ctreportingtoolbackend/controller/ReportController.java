@@ -20,7 +20,7 @@ public final class ReportController {
 
     @GetMapping("/{id}")
     public ReportDTO getReportById(@PathVariable Long id) {
-        return reportService.getReportDTOById(id);
+        return reportService.getReportById(id);
     }
 
     @PutMapping("/{id}")
@@ -36,7 +36,7 @@ public final class ReportController {
 
     @DeleteMapping("/{id}")
     public void deleteReport(@PathVariable Long id) {
-        reportService.deleteReport(ReportDTO.builder().id(id).build());
+        reportService.deleteReport(id);
     }
 
     @GetMapping("/{reportId}/diagnosticReport")

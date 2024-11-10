@@ -1,6 +1,5 @@
 package hu.kvcspt.ctreportingtoolbackend.dto;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,11 +18,9 @@ public class ReportDTO {
     private Long id;
     private String title;
     private LocalDateTime createdDate;
-    private String patientId;
-    private Long createdById;
-    @NotNull
-    private Long templateId;
+    private PatientDTO patient;
+    private UserDTO createdBy;
+    private ReportTemplateDTO template;
     private Map<String, String> sections = new HashMap<>();
-    private List<Long> scanIds;
-
+    private List<ScanDTO> scans;
 }

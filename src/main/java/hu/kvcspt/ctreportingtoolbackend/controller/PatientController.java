@@ -2,7 +2,9 @@ package hu.kvcspt.ctreportingtoolbackend.controller;
 
 import hu.kvcspt.ctreportingtoolbackend.dto.PatientDTO;
 import hu.kvcspt.ctreportingtoolbackend.logic.PatientService;
+import hu.kvcspt.ctreportingtoolbackend.mapper.PatientMapper;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +22,7 @@ public final class PatientController {
 
     @GetMapping("/{id}")
     public PatientDTO getPatientById(@PathVariable String id) {
-        return patientService.getPatientDTOById(id);
+        return patientService.getPatientById(id).orElseThrow(() -> new IllegalArgumentException("Patient with" + id +" ID does not exist!"));
     }
 
     @PutMapping("/{id}")
@@ -36,7 +38,7 @@ public final class PatientController {
 
     @DeleteMapping("/{id}")
     public void deletePatient(@PathVariable String id) {
-        patientService.deletePatient(PatientDTO.builder().id(id).build());
+        patientService.deletePatient(id);
     }
 
 }

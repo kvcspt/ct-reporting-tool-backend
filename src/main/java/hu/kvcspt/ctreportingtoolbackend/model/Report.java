@@ -25,14 +25,15 @@ public class Report {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
+    @Column(nullable = false)
     private LocalDateTime createdDate;
 
     @ManyToOne
-    @JoinColumn(name = "patient_id")
+    @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User createdBy;
 
     @ElementCollection
@@ -42,7 +43,7 @@ public class Report {
     private Map<String, String> sections = new HashMap<>();
 
     @ManyToOne
-    @JoinColumn(name = "report_template_id")
+    @JoinColumn(name = "report_template_id", nullable = false)
     private ReportTemplate template;
 
     @OneToMany(targetEntity = Scan.class)
