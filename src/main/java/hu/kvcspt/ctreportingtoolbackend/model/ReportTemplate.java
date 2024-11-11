@@ -32,8 +32,6 @@ public class ReportTemplate {
     @Column(name = "section_value")
     private Map<String, String> sections = new HashMap<>();
 
-    @OneToMany(targetEntity = Report.class)
-    private List<Report> reports;
     public StructureDefinition toFhirStructureDefinition() {
         StructureDefinition structureDefinition = new StructureDefinition();
 

@@ -1,7 +1,9 @@
 package hu.kvcspt.ctreportingtoolbackend.logic;
 
 import hu.kvcspt.ctreportingtoolbackend.dto.ScanDTO;
+import hu.kvcspt.ctreportingtoolbackend.mapper.ReportTemplateMapper;
 import hu.kvcspt.ctreportingtoolbackend.mapper.ScanMapper;
+import hu.kvcspt.ctreportingtoolbackend.model.ReportTemplate;
 import hu.kvcspt.ctreportingtoolbackend.model.Scan;
 import hu.kvcspt.ctreportingtoolbackend.model.repository.ScanRepository;
 import lombok.AllArgsConstructor;
@@ -34,9 +36,20 @@ public class ScanService {
     }
 
     public ScanDTO createScan(@NonNull ScanDTO scanDTO){
-        Scan scan = ScanMapper.INSTANCE.toEntity(scanDTO);
-        Scan savedUser = scanRepository.save(scan);
-        return ScanMapper.INSTANCE.fromEntity(savedUser);
+        Scan existingScan = scanRepository
+                .findById(scanDTO.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Scan not found!"));
+
+        Scan newScan = ScanMapper.INSTANCE.toEntity(scanDTO);
+
+        existingScan.setModality(newScan.getModality());
+        existingScan.setPatient(newScan.getPatient());
+        existingScan.setScanDate(newScan.getScanDate());
+        existingScan.setDescription(newScan.getDescription());
+        existingScan.setBodyPart(newScan.getBodyPart());
+        existingScan.setBodyPart(newScan.getBodyPart());
+
+        return ScanMapper.INSTANCE.fromEntity(existingScan);
     }
 
     public void deleteScan(@NonNull Long id){

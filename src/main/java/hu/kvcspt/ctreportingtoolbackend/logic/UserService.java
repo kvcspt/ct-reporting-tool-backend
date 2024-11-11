@@ -25,10 +25,19 @@ public class UserService {
         return userRepository.findById(id).map(UserMapper.INSTANCE::fromEntity).orElseThrow(() -> new NoSuchElementException("User with " + id + "id does not exist!"));
     }
     public UserDTO updateUser(@NonNull UserDTO userDTO){
-        User user = userRepository
+        User existingUser = userRepository
                 .findById(userDTO.getId())
-                .orElse(UserMapper.INSTANCE.toEntity(userDTO));
-        return UserMapper.INSTANCE.fromEntity(userRepository.save(user));
+                .orElseThrow(() -> new IllegalArgumentException("User not found!"));
+
+        User newUser = UserMapper.INSTANCE.toEntity(userDTO);
+
+        existingUser.setName(newUser.getName());
+        existingUser.setReports(newUser.getReports());
+        existingUser.setPassword(newUser.getPassword());
+        existingUser.setRole(newUser.getRole());
+        existingUser.setTitle(newUser.getTitle());
+
+        return UserMapper.INSTANCE.fromEntity(existingUser);
     }
 
     public UserDTO createUser(@NonNull UserDTO userDTO){

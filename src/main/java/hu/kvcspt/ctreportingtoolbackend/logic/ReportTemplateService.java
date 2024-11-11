@@ -2,7 +2,9 @@ package hu.kvcspt.ctreportingtoolbackend.logic;
 
 import hu.kvcspt.ctreportingtoolbackend.dto.ReportTemplateDTO;
 import hu.kvcspt.ctreportingtoolbackend.mapper.ReportTemplateMapper;
+import hu.kvcspt.ctreportingtoolbackend.mapper.UserMapper;
 import hu.kvcspt.ctreportingtoolbackend.model.ReportTemplate;
+import hu.kvcspt.ctreportingtoolbackend.model.User;
 import hu.kvcspt.ctreportingtoolbackend.model.repository.ReportTemplateRepository;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -26,10 +28,17 @@ public class ReportTemplateService {
     }
 
     public ReportTemplateDTO updateReportTemplate(@NonNull ReportTemplateDTO reportTemplateDTO){
-        ReportTemplate reportTemplate = reportTemplateRepository
+        ReportTemplate existingReportTemplate = reportTemplateRepository
                 .findById(reportTemplateDTO.getId())
-                .orElse(ReportTemplateMapper.INSTANCE.toEntity(reportTemplateDTO));
-        return ReportTemplateMapper.INSTANCE.fromEntity(reportTemplateRepository.save(reportTemplate));
+                .orElseThrow(() -> new IllegalArgumentException("ReportTemplate not found!"));
+
+        ReportTemplate newTemplate = ReportTemplateMapper.INSTANCE.toEntity(reportTemplateDTO);
+
+        existingReportTemplate.setReports(newTemplate.getReports());
+        existingReportTemplate.setName(newTemplate.getName());
+        existingReportTemplate.setSections(newTemplate.getSections());
+
+        return ReportTemplateMapper.INSTANCE.fromEntity(existingReportTemplate);
     }
 
     public ReportTemplateDTO createReportTemplate(@NonNull ReportTemplateDTO reportTemplateDTO){

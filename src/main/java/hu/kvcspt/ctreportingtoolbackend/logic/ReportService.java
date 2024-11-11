@@ -4,7 +4,9 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import hu.kvcspt.ctreportingtoolbackend.dto.ReportDTO;
 import hu.kvcspt.ctreportingtoolbackend.mapper.ReportMapper;
+import hu.kvcspt.ctreportingtoolbackend.mapper.UserMapper;
 import hu.kvcspt.ctreportingtoolbackend.model.Report;
+import hu.kvcspt.ctreportingtoolbackend.model.User;
 import hu.kvcspt.ctreportingtoolbackend.model.repository.ReportRepository;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -31,10 +33,21 @@ public class ReportService {
     }
 
     public ReportDTO updateReport(@NonNull ReportDTO reportDTO) {
-        Report report = reportRepository
+        Report existingReport = reportRepository
                 .findById(reportDTO.getId())
-                .orElse(ReportMapper.INSTANCE.toEntity(reportDTO));
-        return ReportMapper.INSTANCE.fromEntity(reportRepository.save(report));
+                .orElseThrow(() -> new IllegalArgumentException("Report not found!"));
+
+        Report newReport = ReportMapper.INSTANCE.toEntity(reportDTO);
+
+        existingReport.setPatient(newReport.getPatient());
+        existingReport.setScans(newReport.getScans());
+        existingReport.setSections(newReport.getSections());
+        existingReport.setCreatedBy(newReport.getCreatedBy());
+        existingReport.setTitle(newReport.getTitle());
+        existingReport.setCreatedDate(newReport.getCreatedDate());
+        existingReport.setTemplate(newReport.getTemplate());
+
+        return ReportMapper.INSTANCE.fromEntity(existingReport);
     }
 
     public ReportDTO createReport(@NonNull ReportDTO reportDTO){
