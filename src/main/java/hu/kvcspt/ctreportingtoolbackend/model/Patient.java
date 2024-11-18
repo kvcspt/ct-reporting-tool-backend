@@ -1,7 +1,6 @@
 package hu.kvcspt.ctreportingtoolbackend.model;
 
 import hu.kvcspt.ctreportingtoolbackend.enums.Gender;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,66 +12,70 @@ import org.hl7.fhir.r5.model.HumanName;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-@Entity
-@Table(name = "patients")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Patient {
-    @Id
     private String id;
     private String name;
+    private String placeOfBirth;
     private LocalDate dateOfBirth;
-    @Enumerated(EnumType.STRING)
     private Gender gender;
     private String phoneNumber;
     private String address;
-
-    @OneToMany(targetEntity = Report.class, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Report> reports = new ArrayList<>();
-
-    @OneToMany(targetEntity = Scan.class, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Scan> scans;
+    private String mothersMaidenName;
 
     public org.hl7.fhir.r5.model.Patient toFhirPatient() {
         org.hl7.fhir.r5.model.Patient fhirPatient = new org.hl7.fhir.r5.model.Patient();
-
         fhirPatient.setId(String.valueOf(id));
+        setPhoneNumber(fhirPatient);
+        setAddress(fhirPatient);
+        setName(fhirPatient);
+        setDateOfBirth(fhirPatient);
+        setGender(fhirPatient);
+        return fhirPatient;
+    }
 
+    private void setPhoneNumber(org.hl7.fhir.r5.model.Patient fhirPatient) {
         if (phoneNumber != null) {
             ContactPoint contact = new ContactPoint();
             contact.setSystem(ContactPoint.ContactPointSystem.PHONE);
             contact.setValue(phoneNumber);
             fhirPatient.addTelecom(contact);
         }
+    }
 
+    private void setAddress(org.hl7.fhir.r5.model.Patient fhirPatient) {
         if (address != null) {
-            Address address = new Address();
-            address.setText(String.valueOf(address));
-            fhirPatient.addAddress(address);
+            Address fhirAddress = new Address();
+            fhirAddress.setText(address);
+            fhirPatient.addAddress(fhirAddress);
         }
+    }
 
+    private void setName(org.hl7.fhir.r5.model.Patient fhirPatient) {
         if (name != null) {
             HumanName humanName = new HumanName();
             humanName.setText(name);
             fhirPatient.addName(humanName);
         }
+    }
 
+    private void setDateOfBirth(org.hl7.fhir.r5.model.Patient fhirPatient) {
         if (dateOfBirth != null) {
             fhirPatient.setBirthDate(Date.from(dateOfBirth.atStartOfDay(ZoneId.systemDefault()).toInstant()));
         }
+    }
 
+    private void setGender(org.hl7.fhir.r5.model.Patient fhirPatient) {
         if (gender != null) {
             fhirPatient.setGender(convertGenderToFhir(gender));
         }
-
-        return fhirPatient;
     }
+
 
     private Enumerations.AdministrativeGender convertGenderToFhir(Gender gender) {
         return switch (gender) {

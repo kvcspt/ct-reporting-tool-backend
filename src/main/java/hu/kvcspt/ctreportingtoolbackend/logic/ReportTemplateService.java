@@ -2,9 +2,7 @@ package hu.kvcspt.ctreportingtoolbackend.logic;
 
 import hu.kvcspt.ctreportingtoolbackend.dto.ReportTemplateDTO;
 import hu.kvcspt.ctreportingtoolbackend.mapper.ReportTemplateMapper;
-import hu.kvcspt.ctreportingtoolbackend.mapper.UserMapper;
 import hu.kvcspt.ctreportingtoolbackend.model.ReportTemplate;
-import hu.kvcspt.ctreportingtoolbackend.model.User;
 import hu.kvcspt.ctreportingtoolbackend.model.repository.ReportTemplateRepository;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -34,7 +32,6 @@ public class ReportTemplateService {
 
         ReportTemplate newTemplate = ReportTemplateMapper.INSTANCE.toEntity(reportTemplateDTO);
 
-        existingReportTemplate.setReports(newTemplate.getReports());
         existingReportTemplate.setName(newTemplate.getName());
         existingReportTemplate.setSections(newTemplate.getSections());
 

@@ -33,9 +33,6 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(targetEntity = Report.class)
-    private List<Report> reports;
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(() -> role.toString());

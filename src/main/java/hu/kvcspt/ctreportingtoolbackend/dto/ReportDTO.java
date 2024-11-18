@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Data
@@ -22,5 +21,4 @@ public class ReportDTO {
     private UserDTO createdBy;
     private ReportTemplateDTO template;
     private Map<String, String> sections = new HashMap<>();
-    private List<ScanDTO> scans;
 }

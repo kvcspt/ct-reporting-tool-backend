@@ -18,5 +18,6 @@ public class ScanDTO {
     private String description;
     private String bodyPart;
     private PatientDTO patient;
-    private Long reportId;
+    private String performer;
+    private String resultsInterpreter;
 }
