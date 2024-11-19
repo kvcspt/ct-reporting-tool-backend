@@ -2,15 +2,17 @@ package hu.kvcspt.ctreportingtoolbackend.controller;
 
 import hu.kvcspt.ctreportingtoolbackend.dto.ReportTemplateDTO;
 import hu.kvcspt.ctreportingtoolbackend.logic.ReportTemplateService;
+import hu.kvcspt.ctreportingtoolbackend.util.FieldExtractor;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/report-templates")
 @AllArgsConstructor
 public final class ReportTemplateController {
+    private static final String MODEL_PACKAGE_NAME = "hu.kvcspt.ctreportingtoolbackend.model.";
     private final ReportTemplateService reportTemplateService;
 
     @GetMapping
@@ -37,5 +39,19 @@ public final class ReportTemplateController {
     @DeleteMapping("/{id}")
     public void deleteReportTemplate(@PathVariable Long id) {
         reportTemplateService.deleteReportTemplate(id);
+    }
+
+    @GetMapping("/fields")
+    public List<String> getFields(@RequestParam(value = "className", required = false) String className) {
+        if(className == null || className.isBlank()){
+            return FieldExtractor.getFields();
+        }
+        try {
+            Class<?> clazz = Class.forName(MODEL_PACKAGE_NAME + className);
+            return FieldExtractor.getFields(clazz);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return List.of("Class not found");
+        }
     }
 }

@@ -32,7 +32,6 @@ public class UserService {
         User newUser = UserMapper.INSTANCE.toEntity(userDTO);
 
         existingUser.setName(newUser.getName());
-        existingUser.setReports(newUser.getReports());
         existingUser.setPassword(newUser.getPassword());
         existingUser.setRole(newUser.getRole());
         existingUser.setTitle(newUser.getTitle());

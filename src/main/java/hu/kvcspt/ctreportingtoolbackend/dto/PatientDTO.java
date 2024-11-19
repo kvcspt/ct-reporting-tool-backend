@@ -18,5 +18,5 @@ public class PatientDTO {
     private Gender gender;
     private String phoneNumber;
     private String address;
-
+    private String mothersMaidenName;
 }

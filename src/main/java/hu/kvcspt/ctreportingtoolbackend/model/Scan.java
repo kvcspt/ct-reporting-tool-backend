@@ -1,6 +1,5 @@
 package hu.kvcspt.ctreportingtoolbackend.model;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,28 +12,19 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 
-@Entity
-@Table(name = "scans")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Scan {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String modality;
     private LocalDate scanDate;
     private String description;
     private String bodyPart;
-    @ManyToOne
-    @JoinColumn(name = "patient_id")
     private Patient patient;
-
-    @ManyToOne
-    @JoinColumn(name = "report_id")
-    private Report report;
+    private String performer;
+    private String resultsInterpreter;
 
     public ImagingStudy toImagingStudy() {
         ImagingStudy imagingStudy = new ImagingStudy();
