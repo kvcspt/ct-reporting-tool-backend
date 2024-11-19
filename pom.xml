@@ -31,6 +31,7 @@
         <dcm4che.version>5.33.0</dcm4che.version>
         <hapi.version>7.4.0</hapi.version>
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+        <jwt.version>0.12.5</jwt.version>
     </properties>
     <repositories>
         <repository>
@@ -90,6 +91,23 @@
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-structures-r5</artifactId>
             <version>${hapi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jwt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jwt.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
