@@ -1,4 +1,4 @@
-package hu.kvcspt.ctreportingtoolbackend.security;
+package hu.kvcspt.ctreportingtoolbackend.config;
 
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;

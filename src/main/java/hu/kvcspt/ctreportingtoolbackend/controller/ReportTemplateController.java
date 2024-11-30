@@ -4,12 +4,14 @@ import hu.kvcspt.ctreportingtoolbackend.dto.ReportTemplateDTO;
 import hu.kvcspt.ctreportingtoolbackend.logic.ReportTemplateService;
 import hu.kvcspt.ctreportingtoolbackend.util.FieldExtractor;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/report-templates")
+@Log4j2
 @AllArgsConstructor
 public final class ReportTemplateController {
     private static final String MODEL_PACKAGE_NAME = "hu.kvcspt.ctreportingtoolbackend.model.";
@@ -50,8 +52,8 @@ public final class ReportTemplateController {
             Class<?> clazz = Class.forName(MODEL_PACKAGE_NAME + className);
             return FieldExtractor.getFields(clazz);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return List.of("Class not found");
+            log.error("Class not found {}", className);
+            return List.of("Class not found {}", className);
         }
     }
 }

@@ -8,10 +8,7 @@ import org.hl7.fhir.r5.model.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -20,14 +17,14 @@ import java.util.Map;
 public class Report {
     private static final String FINDINGS_KEY = "Findings";
     private static final String CONCLUSION_KEY = "Conclusion";
-    private Long id;
+    private UUID id;
     private String title;
     private LocalDateTime createdDate;
     private Patient patient;
     private User createdBy;
     private Map<String, String> sections = new HashMap<>();
     private ReportTemplate template;
-    private List<Scan> scans;
+    private Scan scan;
     private List<Lesion> lesions;
 
     public DiagnosticReport toFhirDiagnosticReport() {
@@ -40,11 +37,9 @@ public class Report {
         diagnosticReport.setIssued(Date.from(createdDate.atZone(ZoneId.systemDefault()).toInstant()));
         diagnosticReport.addPerformer(new Reference(createdBy.toPractitioner()));
 
-        if(scans != null){
-            List<ImagingStudy> imagingStudies = scans.stream().map(Scan::toImagingStudy).toList();
-            for (ImagingStudy study : imagingStudies) {
-                diagnosticReport.addStudy(new Reference(study));
-            }
+        if(scan != null){
+            ImagingStudy imagingStudy = scan.toImagingStudy();
+            diagnosticReport = diagnosticReport.addStudy(new Reference(imagingStudy));
         }
 
         for (Map.Entry<String, String> section : getSections().entrySet()) {

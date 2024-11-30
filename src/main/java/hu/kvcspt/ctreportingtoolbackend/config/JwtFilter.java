@@ -1,4 +1,4 @@
-package hu.kvcspt.ctreportingtoolbackend.security;
+package hu.kvcspt.ctreportingtoolbackend.config;
 
 import hu.kvcspt.ctreportingtoolbackend.logic.auth.JwtService;
 import hu.kvcspt.ctreportingtoolbackend.logic.auth.UserDetailsServiceImpl;

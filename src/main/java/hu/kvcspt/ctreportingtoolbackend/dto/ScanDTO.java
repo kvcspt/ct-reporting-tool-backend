@@ -6,13 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ScanDTO {
-    private Long id;
+    private UUID id;
     private String modality;
     private LocalDate scanDate;
     private String description;
@@ -20,4 +21,8 @@ public class ScanDTO {
     private PatientDTO patient;
     private String performer;
     private String resultsInterpreter;
+
+    // WADO UID fields for Cornerstone (DICOM object retrieval)
+    private String studyUid;
+    private String seriesUid;
 }

@@ -11,6 +11,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,13 @@ public class UserService {
     }
     public UserDTO getUserById(@NonNull Long id){
         return userRepository.findById(id).map(UserMapper.INSTANCE::fromEntity).orElseThrow(() -> new NoSuchElementException("User with " + id + "id does not exist!"));
+    }
+
+    public UserDTO getUserFromContext(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userRepository.findByUserName(username).orElseThrow(() -> new NoSuchElementException("User with " + username + "username does not exist!"));
+        return UserMapper.INSTANCE.fromEntity(user);
     }
     public UserDTO updateUser(@NonNull UserDTO userDTO){
         User existingUser = userRepository
