@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -23,4 +24,5 @@ public class ReportDTO {
     private ReportTemplateDTO template;
     private Map<String, String> sections = new HashMap<>();
     private ScanDTO scan;
+    private List<LesionDTO> lesions;
 }

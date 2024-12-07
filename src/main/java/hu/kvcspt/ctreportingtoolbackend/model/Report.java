@@ -53,6 +53,25 @@ public class Report {
             }
         }
 
+        if (lesions != null && !lesions.isEmpty()) {
+            for (Lesion lesion : lesions) {
+                Observation lesionObservation = new Observation();
+                lesionObservation.setCode(new CodeableConcept().setText("Lesion Details"));
+
+                lesionObservation.addComponent()
+                        .setCode(new CodeableConcept().setText("Diameter X"))
+                        .setValue(new Quantity().setValue(lesion.getDiameterX()).setUnit("mm"));
+                lesionObservation.addComponent()
+                        .setCode(new CodeableConcept().setText("Diameter Y"))
+                        .setValue(new Quantity().setValue(lesion.getDiameterY()).setUnit("mm"));
+                lesionObservation.addComponent()
+                        .setCode(new CodeableConcept().setText("Diameter Z"))
+                        .setValue(new Quantity().setValue(lesion.getDiameterZ()).setUnit("mm"));
+
+                diagnosticReport.addResult(new Reference(lesionObservation));
+            }
+        }
+
         return diagnosticReport;
     }
 }
