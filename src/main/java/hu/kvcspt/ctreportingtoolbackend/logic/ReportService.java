@@ -6,7 +6,10 @@ import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import hu.kvcspt.ctreportingtoolbackend.dto.LesionDTO;
 import hu.kvcspt.ctreportingtoolbackend.dto.ReportDTO;
 import hu.kvcspt.ctreportingtoolbackend.dto.ReportTemplateDTO;
 import hu.kvcspt.ctreportingtoolbackend.mapper.ReportMapper;
@@ -34,6 +37,7 @@ public class ReportService {
             Document document = new Document();
             PdfWriter.getInstance(document, outputStream);
             Font titleFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
+            Font sectionFont = new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD);
             Font contentFont = new Font(Font.FontFamily.HELVETICA, 12);
 
             document.open();
@@ -43,6 +47,30 @@ public class ReportService {
 
             for (Map.Entry<String,String> sectionEntry : reportDTO.getSections().entrySet()) {
                 document.add(new Paragraph(sectionEntry.getKey() + ": " + sectionEntry.getValue(), contentFont));
+            }
+
+            if (reportDTO.getLesions() != null && !reportDTO.getLesions().isEmpty()) {
+                document.add(new Paragraph("Lesions:", sectionFont));
+                PdfPTable table = new PdfPTable(4); // columns
+                table.setWidthPercentage(100);
+                table.setSpacingBefore(10);
+                table.setSpacingAfter(10);
+
+                table.addCell(new PdfPCell(new Paragraph("Index", contentFont)));
+                table.addCell(new PdfPCell(new Paragraph("Diameter X", contentFont)));
+                table.addCell(new PdfPCell(new Paragraph("Diameter Y", contentFont)));
+                table.addCell(new PdfPCell(new Paragraph("Diameter Z", contentFont)));
+
+                for (int i = 0; i < reportDTO.getLesions().size(); i++) {
+                    LesionDTO lesion = reportDTO.getLesions().get(i);
+
+                    table.addCell(new PdfPCell(new Paragraph(String.valueOf(i + 1), contentFont)));
+                    table.addCell(new PdfPCell(new Paragraph(String.valueOf(lesion.getDiameterX()), contentFont)));
+                    table.addCell(new PdfPCell(new Paragraph(String.valueOf(lesion.getDiameterY()), contentFont)));
+                    table.addCell(new PdfPCell(new Paragraph(String.valueOf(lesion.getDiameterZ()), contentFont)));
+                }
+
+                document.add(table);
             }
 
             document.close();

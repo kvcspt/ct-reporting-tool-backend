@@ -11,6 +11,17 @@
         .section {
             margin-bottom: 20px;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+        }
     </style>
 </head>
 <body>
@@ -21,6 +32,27 @@
         <h3 th:text="${section.key}">Section Title</h3>
         <p th:text="${section.value}">Section Content</p>
     </div>
+</div>
+<div class="lesions" th:if="${report.lesions != null and !report.lesions.isEmpty()}">
+    <h2>Lesions</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Index</th>
+            <th>Diameter X</th>
+            <th>Diameter Y</th>
+            <th>Diameter Z</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="lesion, index : ${report.lesions}">
+            <td th:text="${index.index + 1}">1</td>
+            <td th:text="${lesion.diameterX}">0.0</td>
+            <td th:text="${lesion.diameterY}">0.0</td>
+            <td th:text="${lesion.diameterZ}">0.0</td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 </body>
 </html>
