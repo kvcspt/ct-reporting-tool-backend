@@ -18,5 +18,3 @@ server:
 orthanc:
   server:
     url: ${ORTHANC_URL}
-    username: ${ORTHANC_USER}
-    password: ${ORTHANC_PASS}

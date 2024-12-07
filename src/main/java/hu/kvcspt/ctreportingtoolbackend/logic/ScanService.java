@@ -6,7 +6,6 @@ import hu.kvcspt.ctreportingtoolbackend.enums.Gender;
 import hu.kvcspt.ctreportingtoolbackend.util.DicomUtils;
 import hu.kvcspt.ctreportingtoolbackend.util.GeneralUtils;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.codec.binary.Base64;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.Tag;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,10 +24,6 @@ public class ScanService {
     private static final String INSTANCES_URL = "/instances";
     @Value("${orthanc.server.url}")
     private String orthancServerUrl;
-    @Value("${orthanc.server.username}")
-    private String orthancServerUsername;
-    @Value("${orthanc.server.password}")
-    private String orthancServerPassword;
     private final RestTemplate restTemplate;
 
     public ScanService(RestTemplate restTemplate) {
@@ -36,12 +31,8 @@ public class ScanService {
     }
 
     public ScanDTO processDicomFile(MultipartFile file) throws IOException {
-        String auth = orthancServerUsername + ":" + orthancServerPassword;
-        String encodedAuth = new String(Base64.encodeBase64(auth.getBytes()));
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        //headers.set("Authorization", "Basic " + encodedAuth);
         HttpEntity<byte[]> requestEntity = new HttpEntity<>(file.getBytes(), headers);
 
         ResponseEntity<String> response = restTemplate.exchange(orthancServerUrl + INSTANCES_URL, HttpMethod.POST, requestEntity, String.class);
@@ -60,13 +51,15 @@ public class ScanService {
         String modality = dicomObject.getString(Tag.Modality);
         Date scanDate = dicomObject.getDate(Tag.StudyDate);
         Date patientDateOfBirth = dicomObject.getDate(Tag.PatientBirthDate);
-        String practicioner = dicomObject.getString(Tag.ReferringPhysicianName);
+        String practitioner = dicomObject.getString(Tag.ReferringPhysicianName);
         String resultsInterpreter = dicomObject.getString(Tag.InterpretationAuthor);
         String patientName = dicomObject.getString(Tag.PatientName);
         String patientSex = dicomObject.getString(Tag.PatientSex);
         String patientId = dicomObject.getString(Tag.PatientID);
         String bodyPart = dicomObject.getString(Tag.BodyPartExamined);
         String mothersMaidenName = dicomObject.getString(Tag.PatientMotherBirthName);
+        String seriesUid = dicomObject.getString(Tag.SeriesInstanceUID);
+        String studyUid = dicomObject.getString(Tag.StudyInstanceUID);
 
         Gender gender = "M".equals(patientSex) ? Gender.MALE : "F".equals(patientSex) ? Gender.FEMALE : Gender.OTHER;
 
@@ -85,8 +78,10 @@ public class ScanService {
                 .modality(modality)
                 .patient(patient)
                 .bodyPart(bodyPart)
-                .performer(practicioner)
+                .performer(practitioner)
                 .resultsInterpreter(resultsInterpreter)
+                .seriesUid(seriesUid)
+                .studyUid(studyUid)
                 .build();
     }
 }

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FieldExtractor {
+    private static final String OTHER = "Other";
     public static final Class<?>[] modelClasses = {Patient.class, Scan.class, Lesion.class};
 
     public static List<String> getFields(Class<?> clazz) {
@@ -27,7 +28,7 @@ public class FieldExtractor {
                 fieldNames.add(clazz.getSimpleName() + "." + field.getName());
             }
         }
-        fieldNames.add("Other");
+        fieldNames.add(OTHER);
 
         return fieldNames;
     }
