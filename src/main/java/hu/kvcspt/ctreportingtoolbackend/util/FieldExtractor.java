@@ -1,6 +1,5 @@
 package hu.kvcspt.ctreportingtoolbackend.util;
 
-import hu.kvcspt.ctreportingtoolbackend.model.Lesion;
 import hu.kvcspt.ctreportingtoolbackend.model.Patient;
 import hu.kvcspt.ctreportingtoolbackend.model.Scan;
 
@@ -9,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FieldExtractor {
-    private static final String OTHER = "Other";
-    public static final Class<?>[] modelClasses = {Patient.class, Scan.class, Lesion.class};
+    public static final String OTHER = "Other";
+    public static final Class<?>[] modelClasses = {Patient.class, Scan.class};
 
     public static List<String> getFields(Class<?> clazz) {
         List<String> fieldNames = new ArrayList<>();

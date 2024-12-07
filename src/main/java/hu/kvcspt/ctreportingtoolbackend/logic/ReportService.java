@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -91,6 +92,10 @@ public class ReportService {
                 return ""; // If any part of the hierarchy is null, return empty string
             }
 
+            if(Objects.equals(fieldName, FieldExtractor.OTHER)){
+                return "";
+            }
+
             try {
                 // Ha a mező egy ismert osztálynév (pl. "Scan"), akkor navigáljunk az osztály megfelelő mezőjére
                 if (isModelClass(fieldName)) {
@@ -108,7 +113,7 @@ public class ReportService {
 
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 log.error("NoSuchFieldException: {0}", e);
-                return ""; // Return empty if field resolution fails
+                return "";
             }
         }
 
