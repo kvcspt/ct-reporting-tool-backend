@@ -2,7 +2,7 @@ spring:
   application:
     name: ct-image-processor-backend
   datasource:
-    url: jdbc:postgresql://localhost:5432/CTReportingTool
+    url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   jpa:
@@ -12,3 +12,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+server:
+  port: 8082
+orthanc:
+  server:
+    url: ${ORTHANC_URL}

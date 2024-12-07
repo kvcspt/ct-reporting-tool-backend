@@ -35,6 +35,7 @@ public class ReportTemplateService {
         existingReportTemplate.setName(newTemplate.getName());
         existingReportTemplate.setSections(newTemplate.getSections());
 
+        reportTemplateRepository.save(existingReportTemplate);
         return ReportTemplateMapper.INSTANCE.fromEntity(existingReportTemplate);
     }
 

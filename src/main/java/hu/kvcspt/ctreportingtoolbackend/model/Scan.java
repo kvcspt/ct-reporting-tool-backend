@@ -8,16 +8,17 @@ import org.hl7.fhir.r5.model.CodeableConcept;
 import org.hl7.fhir.r5.model.Coding;
 import org.hl7.fhir.r5.model.ImagingStudy;
 
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Scan {
-    private Long id;
+    private UUID id;
     private String modality;
     private LocalDate scanDate;
     private String description;
@@ -40,7 +41,9 @@ public class Scan {
 
         imagingStudy.setModality(List.of(modalityConcept));
 
-        imagingStudy.setStarted(java.util.Date.from(Instant.from(scanDate)));
+        if (scanDate != null) {
+            imagingStudy.setStarted(java.util.Date.from(scanDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        }
 
         imagingStudy.setDescription(description);
 
