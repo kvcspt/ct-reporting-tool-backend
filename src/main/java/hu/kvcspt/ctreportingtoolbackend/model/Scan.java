@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 import org.hl7.fhir.r5.model.CodeableConcept;
 import org.hl7.fhir.r5.model.Coding;
 import org.hl7.fhir.r5.model.ImagingStudy;
+import org.hl7.fhir.r5.model.Reference;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
@@ -20,17 +21,25 @@ import java.util.UUID;
 public class Scan {
     private UUID id;
     private String modality;
-    private LocalDate scanDate;
+    private LocalDateTime scanDate;
     private String description;
     private String bodyPart;
     private Patient patient;
     private String performer;
     private String resultsInterpreter;
+    private String studyUid;
+    private String seriesUid;
 
-    public ImagingStudy toImagingStudy() {
+    public ImagingStudy toImagingStudy(org.hl7.fhir.r5.model.Patient fhirPatient) {
         ImagingStudy imagingStudy = new ImagingStudy();
+        imagingStudy.setId(studyUid);
+        imagingStudy.setDescription(description);
 
-        imagingStudy.setId(String.valueOf(id));
+        if (fhirPatient != null) {
+            imagingStudy.setSubject(new Reference(fhirPatient));
+        } else {
+            imagingStudy.setSubject(new Reference()); // Handle null case
+        }
 
         Coding modalityCoding = new Coding();
         modalityCoding.setSystem("https://dicom.nema.org/resources/ontology/DCM");
@@ -42,10 +51,8 @@ public class Scan {
         imagingStudy.setModality(List.of(modalityConcept));
 
         if (scanDate != null) {
-            imagingStudy.setStarted(java.util.Date.from(scanDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            imagingStudy.setStarted(java.util.Date.from(scanDate.atZone(ZoneId.systemDefault()).toInstant()));
         }
-
-        imagingStudy.setDescription(description);
 
         return imagingStudy;
     }
