@@ -13,15 +13,21 @@ import hu.kvcspt.ctreportingtoolbackend.dto.LesionDTO;
 import hu.kvcspt.ctreportingtoolbackend.dto.ReportDTO;
 import hu.kvcspt.ctreportingtoolbackend.dto.ReportTemplateDTO;
 import hu.kvcspt.ctreportingtoolbackend.mapper.ReportMapper;
+import hu.kvcspt.ctreportingtoolbackend.model.Lesion;
 import hu.kvcspt.ctreportingtoolbackend.model.Report;
+import hu.kvcspt.ctreportingtoolbackend.util.FhirClient;
 import hu.kvcspt.ctreportingtoolbackend.util.FieldExtractor;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.hl7.fhir.r5.model.DiagnosticReport;
+import org.hl7.fhir.r5.model.*;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 
@@ -29,7 +35,11 @@ import java.util.Objects;
 @AllArgsConstructor
 @Log4j2
 public class ReportService {
+    private static final String FINDINGS_KEY = "Findings";
+    private static final String CONCLUSION_KEY = "Conclusion";
     private UserService userService;
+    private FhirClient client;
+
     public byte[] generatePdf(ReportDTO reportDTO) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
@@ -83,7 +93,8 @@ public class ReportService {
     }
     public String generateDiagnosticReport(ReportDTO reportDTO) {
         Report report = ReportMapper.INSTANCE.toEntity(reportDTO);
-        DiagnosticReport diagnosticReport = report.toFhirDiagnosticReport();
+        report.setCreatedDate(LocalDateTime.now());
+        DiagnosticReport diagnosticReport = toFhirDiagnosticReport(report,false);
         FhirContext ctxR5 = FhirContext.forR5();
         IParser jsonParser = ctxR5.newJsonParser();
         jsonParser.setPrettyPrint(true);
@@ -109,6 +120,82 @@ public class ReportService {
         }
 
         return reportDTO;
+    }
+
+    public DiagnosticReport uploadToFhirServer(ReportDTO reportDTO) {
+        reportDTO.setCreatedDate(LocalDateTime.now());
+        Report report = ReportMapper.INSTANCE.toEntity(reportDTO);
+        return toFhirDiagnosticReport(report,true);
+    }
+
+    public DiagnosticReport toFhirDiagnosticReport(Report report, boolean upload) {
+        org.hl7.fhir.r5.model.Patient fhirPatient = report.getPatient().toFhirPatient();
+
+
+        DiagnosticReport diagnosticReport = new DiagnosticReport();
+        diagnosticReport.setId(String.valueOf(report.getId()));
+        diagnosticReport.setStatus(DiagnosticReport.DiagnosticReportStatus.FINAL);
+        diagnosticReport.setCode(new CodeableConcept().setText(report.getTitle()));
+        diagnosticReport.setIssued(Date.from(report.getCreatedDate().atZone(ZoneId.systemDefault()).toInstant()));
+        diagnosticReport.addPerformer(new Reference(report.getCreatedBy().toPractitioner()));
+
+        for (Map.Entry<String, String> section : report.getSections().entrySet()) {
+            if (section.getKey().equalsIgnoreCase(FINDINGS_KEY)) {
+                Observation finding = new Observation();
+                finding.setCode(new CodeableConcept().setText("Imaging Findings"));
+                finding.setValue(new CodeableConcept().setText(section.getValue()));
+                diagnosticReport.addResult(new Reference(finding));
+            } else if (section.getKey().equalsIgnoreCase(CONCLUSION_KEY)) {
+                diagnosticReport.setConclusion(section.getValue());
+            }
+        }
+
+        if (report.getLesions() != null && !report.getLesions().isEmpty()) {
+            for (Lesion lesion : report.getLesions()) {
+                Observation lesionObservation = new Observation();
+                lesionObservation.setCategory(Collections.singletonList(
+                        new CodeableConcept().addCoding(new Coding()
+                                .setSystem("http://terminology.hl7.org/CodeSystem/observation-category")
+                                .setCode("imaging")
+                                .setDisplay("Imaging"))));
+
+                lesionObservation.setCode(new CodeableConcept().setText("Lesion Details"));
+
+                lesionObservation.addComponent()
+                        .setCode(new CodeableConcept().setText("Diameter X"))
+                        .setValue(new Quantity().setValue(lesion.getDiameterX()).setUnit("mm"));
+                lesionObservation.addComponent()
+                        .setCode(new CodeableConcept().setText("Diameter Y"))
+                        .setValue(new Quantity().setValue(lesion.getDiameterY()).setUnit("mm"));
+                lesionObservation.addComponent()
+                        .setCode(new CodeableConcept().setText("Diameter Z"))
+                        .setValue(new Quantity().setValue(lesion.getDiameterZ()).setUnit("mm"));
+
+                if (upload) {
+                    lesionObservation = client.validateAndCreate(lesionObservation);
+                }
+                diagnosticReport.addResult(new Reference(lesionObservation));
+            }
+        }
+
+        Patient createdPatient = null;
+        if(upload){
+            createdPatient = client.validateAndCreate(fhirPatient);
+            diagnosticReport.setSubject(new Reference(createdPatient));
+        }
+
+        if(report.getScan() != null){
+            ImagingStudy imagingStudy = report.getScan().toImagingStudy(createdPatient);
+            if (upload){
+                client.validateAndCreate(imagingStudy);
+            }
+            diagnosticReport = diagnosticReport.addStudy(new Reference(imagingStudy));
+        }
+
+        if(upload){
+            client.validateAndCreate(diagnosticReport);
+        }
+        return diagnosticReport;
     }
 
     private String resolvePlaceholder(String placeholder, Object rootObject) {
