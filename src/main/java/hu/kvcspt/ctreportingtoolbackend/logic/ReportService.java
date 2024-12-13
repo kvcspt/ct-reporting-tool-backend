@@ -139,6 +139,62 @@ public class ReportService {
         diagnosticReport.setIssued(Date.from(report.getCreatedDate().atZone(ZoneId.systemDefault()).toInstant()));
         diagnosticReport.addPerformer(new Reference(report.getCreatedBy().toPractitioner()));
 
+        processSections(report, diagnosticReport);
+
+        if (report.getLesions() != null && !report.getLesions().isEmpty()) {
+            for (Lesion lesion : report.getLesions()) {
+                Observation lesionObservation = createLesionObservation(upload, lesion);
+                diagnosticReport.addResult(new Reference(lesionObservation));
+            }
+        }
+
+        if(upload){
+            Patient createdPatient = client.validateAndCreate(fhirPatient);
+            diagnosticReport.setSubject(new Reference(createdPatient));
+        }
+
+        if(report.getScan() != null){
+            ImagingStudy imagingStudy = report.getScan().toImagingStudy((Patient) diagnosticReport.getSubject().getResource());
+            if (upload){
+                client.validateAndCreate(imagingStudy);
+            }
+            diagnosticReport = diagnosticReport.addStudy(new Reference(imagingStudy));
+        }
+
+        if(upload){
+            client.validateAndCreate(diagnosticReport);
+        }
+
+        return diagnosticReport;
+    }
+
+    private Observation createLesionObservation(boolean upload, Lesion lesion) {
+        Observation lesionObservation = new Observation();
+        lesionObservation.setCategory(Collections.singletonList(
+                new CodeableConcept().addCoding(new Coding()
+                        .setSystem("http://terminology.hl7.org/CodeSystem/observation-category")
+                        .setCode("imaging")
+                        .setDisplay("Imaging"))));
+
+        lesionObservation.setCode(new CodeableConcept().setText("Lesion Details"));
+
+        lesionObservation.addComponent()
+                .setCode(new CodeableConcept().setText("Diameter X"))
+                .setValue(new Quantity().setValue(lesion.getDiameterX()).setUnit("mm"));
+        lesionObservation.addComponent()
+                .setCode(new CodeableConcept().setText("Diameter Y"))
+                .setValue(new Quantity().setValue(lesion.getDiameterY()).setUnit("mm"));
+        lesionObservation.addComponent()
+                .setCode(new CodeableConcept().setText("Diameter Z"))
+                .setValue(new Quantity().setValue(lesion.getDiameterZ()).setUnit("mm"));
+
+        if (upload) {
+            lesionObservation = client.validateAndCreate(lesionObservation);
+        }
+        return lesionObservation;
+    }
+
+    private void processSections(Report report, DiagnosticReport diagnosticReport) {
         for (Map.Entry<String, String> section : report.getSections().entrySet()) {
             if (section.getKey().equalsIgnoreCase(FINDINGS_KEY)) {
                 Observation finding = new Observation();
@@ -149,53 +205,6 @@ public class ReportService {
                 diagnosticReport.setConclusion(section.getValue());
             }
         }
-
-        if (report.getLesions() != null && !report.getLesions().isEmpty()) {
-            for (Lesion lesion : report.getLesions()) {
-                Observation lesionObservation = new Observation();
-                lesionObservation.setCategory(Collections.singletonList(
-                        new CodeableConcept().addCoding(new Coding()
-                                .setSystem("http://terminology.hl7.org/CodeSystem/observation-category")
-                                .setCode("imaging")
-                                .setDisplay("Imaging"))));
-
-                lesionObservation.setCode(new CodeableConcept().setText("Lesion Details"));
-
-                lesionObservation.addComponent()
-                        .setCode(new CodeableConcept().setText("Diameter X"))
-                        .setValue(new Quantity().setValue(lesion.getDiameterX()).setUnit("mm"));
-                lesionObservation.addComponent()
-                        .setCode(new CodeableConcept().setText("Diameter Y"))
-                        .setValue(new Quantity().setValue(lesion.getDiameterY()).setUnit("mm"));
-                lesionObservation.addComponent()
-                        .setCode(new CodeableConcept().setText("Diameter Z"))
-                        .setValue(new Quantity().setValue(lesion.getDiameterZ()).setUnit("mm"));
-
-                if (upload) {
-                    lesionObservation = client.validateAndCreate(lesionObservation);
-                }
-                diagnosticReport.addResult(new Reference(lesionObservation));
-            }
-        }
-
-        Patient createdPatient = null;
-        if(upload){
-            createdPatient = client.validateAndCreate(fhirPatient);
-            diagnosticReport.setSubject(new Reference(createdPatient));
-        }
-
-        if(report.getScan() != null){
-            ImagingStudy imagingStudy = report.getScan().toImagingStudy(createdPatient);
-            if (upload){
-                client.validateAndCreate(imagingStudy);
-            }
-            diagnosticReport = diagnosticReport.addStudy(new Reference(imagingStudy));
-        }
-
-        if(upload){
-            client.validateAndCreate(diagnosticReport);
-        }
-        return diagnosticReport;
     }
 
     private String resolvePlaceholder(String placeholder, Object rootObject) {
