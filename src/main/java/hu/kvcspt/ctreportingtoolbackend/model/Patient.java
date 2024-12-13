@@ -30,7 +30,7 @@ public class Patient {
 
     public org.hl7.fhir.r5.model.Patient toFhirPatient() {
         org.hl7.fhir.r5.model.Patient fhirPatient = new org.hl7.fhir.r5.model.Patient();
-        fhirPatient.setId(String.valueOf(id));
+        fhirPatient.setId(id);
         setPhoneNumber(fhirPatient);
         setAddress(fhirPatient);
         setName(fhirPatient);

@@ -103,9 +103,15 @@ public final class ReportController {
                     .body(errorResponse.getBytes(StandardCharsets.UTF_8));
         }
     }
-    //@PostMapping("/fhircast")
-    //public ResponseEntity<String> uploadToFhirCast(@RequestBody ReportDTO reportDTO){
-    //}
+
+    @PostMapping("/fhircast")
+    public ResponseEntity<?> uploadToFhirCast(@RequestBody ReportDTO reportDTO){
+        var resp = reportService.uploadToFhirServer(reportDTO);
+        if (resp == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+        return ResponseEntity.ok().build();
+    }
 
     @PostMapping("/template/{templateId}")
     public ResponseEntity<ReportDTO> generateReportFromTemplate(@PathVariable(name = "templateId") Long reportTemplateId, @RequestBody ScanDTO scanDTO){
