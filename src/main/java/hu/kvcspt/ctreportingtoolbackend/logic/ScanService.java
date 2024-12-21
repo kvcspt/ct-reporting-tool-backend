@@ -5,6 +5,7 @@ import hu.kvcspt.ctreportingtoolbackend.dto.ScanDTO;
 import hu.kvcspt.ctreportingtoolbackend.enums.Gender;
 import hu.kvcspt.ctreportingtoolbackend.util.DicomUtils;
 import hu.kvcspt.ctreportingtoolbackend.util.GeneralUtils;
+import jakarta.annotation.Nullable;
 import lombok.extern.log4j.Log4j2;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.Tag;
@@ -15,9 +16,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.*;
 
 @Service
@@ -39,35 +37,19 @@ public class ScanService {
 
     public List<ScanDTO> getScans() {
         RestTemplate restTemplate = new RestTemplate();
-        String studiesUrl = orthancServerUrl + STUDIES_URL;
-        List<String> studyIds = restTemplate.getForObject(studiesUrl, List.class);
+        List<String> studyIds = fetchStudyIds(restTemplate);
 
         List<ScanDTO> scans = new ArrayList<>();
         assert studyIds != null;
         for (String studyId : studyIds) {
-            String studyUrl = orthancServerUrl + STUDIES_URL + "/" + studyId;
-            Map<String, Object> studyDetails = restTemplate.getForObject(studyUrl, Map.class);
+            Map<String, Object> studyDetails = fetchStudyDetails(studyId, restTemplate);
 
-            String seriesUrl = orthancServerUrl + STUDIES_URL + "/" + studyId + SERIES_URL;
-            List<Map<String, Object>> seriesList = restTemplate.getForObject(seriesUrl, List.class);
-
-            Map<String, String> mainDicomTags = (Map<String, String>) studyDetails.get(MAIN_DICOM_TAGS);
+            List<Map<String, Object>> seriesList = fetchSeriesList(studyId, restTemplate);
 
             if (seriesList != null && !seriesList.isEmpty()) {
                 for (Map<String, Object> series : seriesList) {
-                    Map<String, String> seriesMainDicom = (Map<String, String>) series.get(MAIN_DICOM_TAGS);
-                    ScanDTO scan = ScanDTO.builder()
-                            .id(UUID.randomUUID())
-                            .modality(seriesMainDicom.get("Modality"))
-                            .scanDate(parseScanDate(mainDicomTags.get("StudyDate")))
-                            .description(mainDicomTags.get("StudyDescription"))
-                            .bodyPart(seriesMainDicom.get("BodyPartExamined"))
-                            .patient(getPatientDetails(studyDetails))
-                            .performer(mainDicomTags.get("ReferringPhysicianName"))
-                            .resultsInterpreter((String) studyDetails.get("PerformingPhysicianName"))
-                            .studyUid(mainDicomTags.get("StudyInstanceUID"))
-                            .seriesUid(seriesMainDicom.get("SeriesInstanceUID"))
-                            .build();
+                    assert studyDetails != null;
+                    ScanDTO scan = getScanDTOFromStudyDetails(series, studyDetails);
 
                     scans.add(scan);
                 }
@@ -76,28 +58,6 @@ public class ScanService {
         return scans;
     }
 
-    private PatientDTO getPatientDetails(Map<String, Object> studyDetails) {
-        Map<String, String> patientMainDicomTags = (Map<String, String>) studyDetails.get(PATIENT + MAIN_DICOM_TAGS);
-
-        return PatientDTO.builder()
-                .name(patientMainDicomTags.get("PatientName"))
-                .dateOfBirth(parseScanDate((patientMainDicomTags.get("PatientBirthDate"))))
-                .id(patientMainDicomTags.get("PatientID"))
-                .gender("M".equals(patientMainDicomTags.get("PatientSex")) ? Gender.MALE : "F".equals(patientMainDicomTags.get("PatientSex")) ? Gender.FEMALE : Gender.OTHER)
-                .build();
-    }
-    private LocalDate parseScanDate(String studyDate) {
-        if (studyDate == null || studyDate.isEmpty()) {
-            return null;
-        }
-
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-            return LocalDate.parse(studyDate, formatter);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Invalid date format: " + studyDate, e);
-        }
-    }
     public ScanDTO processDicomFile(MultipartFile file) throws IOException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
@@ -108,10 +68,58 @@ public class ScanService {
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new IOException("Failed to upload DICOM file to Orthanc server");
         }
-        return getScanDto(file);
+        return getScanDTOFromMultipartFile(file);
     }
 
-    private ScanDTO getScanDto(MultipartFile file) throws IOException {
+    private ScanDTO getScanDTOFromStudyDetails(Map<String, Object> series, Map<String, Object> studyDetails) {
+        Map<String, String> mainDicomTags = (Map<String, String>) studyDetails.get(MAIN_DICOM_TAGS);
+        Map<String, String> seriesMainDicom = (Map<String, String>) series.get(MAIN_DICOM_TAGS);
+        return ScanDTO.builder()
+                .id(UUID.randomUUID())
+                .modality(seriesMainDicom.get("Modality"))
+                .scanDate(GeneralUtils.parseScanDateToLocalDateTime(mainDicomTags.get("StudyDate"), mainDicomTags.get("StudyTime")))
+                .description(mainDicomTags.get("StudyDescription"))
+                .bodyPart(seriesMainDicom.get("BodyPartExamined"))
+                .patient(getPatientDetails(studyDetails))
+                .performer(mainDicomTags.get("ReferringPhysicianName"))
+                .resultsInterpreter((String) studyDetails.get("PerformingPhysicianName"))
+                .studyUid(mainDicomTags.get("StudyInstanceUID"))
+                .seriesUid(seriesMainDicom.get("SeriesInstanceUID"))
+                .build();
+    }
+
+    @Nullable
+    private List<Map<String, Object>> fetchSeriesList(String studyId, RestTemplate restTemplate) {
+        String seriesUrl = orthancServerUrl + STUDIES_URL + "/" + studyId + SERIES_URL;
+        List<Map<String, Object>> seriesList = restTemplate.getForObject(seriesUrl, List.class);
+        return seriesList;
+    }
+
+    @Nullable
+    private Map<String, Object> fetchStudyDetails(String studyId, RestTemplate restTemplate) {
+        String studyUrl = orthancServerUrl + STUDIES_URL + "/" + studyId;
+        Map<String, Object> studyDetails = restTemplate.getForObject(studyUrl, Map.class);
+        return studyDetails;
+    }
+
+    @Nullable
+    private List<String> fetchStudyIds(RestTemplate restTemplate) {
+        String studiesUrl = orthancServerUrl + STUDIES_URL;
+        return restTemplate.getForObject(studiesUrl, List.class);
+    }
+
+    private PatientDTO getPatientDetails(Map<String, Object> studyDetails) {
+        Map<String, String> patientMainDicomTags = (Map<String, String>) studyDetails.get(PATIENT + MAIN_DICOM_TAGS);
+
+        return PatientDTO.builder()
+                .name(patientMainDicomTags.get("PatientName"))
+                .dateOfBirth(GeneralUtils.parseScanDateToLocalDate((patientMainDicomTags.get("PatientBirthDate"))))
+                .id(patientMainDicomTags.get("PatientID"))
+                .gender(GeneralUtils.parseGender(patientMainDicomTags.get("PatientSex")))
+                .build();
+    }
+
+    private ScanDTO getScanDTOFromMultipartFile(MultipartFile file) throws IOException {
         Attributes dicomObject = DicomUtils.parseDicom(file.getInputStream());
         if (dicomObject == null) throw new IOException("Invalid DICOM data");
 
@@ -129,7 +137,7 @@ public class ScanService {
         String seriesUid = dicomObject.getString(Tag.SeriesInstanceUID);
         String studyUid = dicomObject.getString(Tag.StudyInstanceUID);
 
-        Gender gender = "M".equals(patientSex) ? Gender.MALE : "F".equals(patientSex) ? Gender.FEMALE : Gender.OTHER;
+        Gender gender = GeneralUtils.parseGender(patientSex);
 
         PatientDTO patient = PatientDTO.builder()
                 .id(patientId)
@@ -141,7 +149,7 @@ public class ScanService {
 
         return ScanDTO.builder()
                 .id(UUID.randomUUID())
-                .scanDate(GeneralUtils.dateToLocalDate(scanDate))
+                .scanDate(GeneralUtils.dateToLocalDateTime(scanDate))
                 .description(description)
                 .modality(modality)
                 .patient(patient)

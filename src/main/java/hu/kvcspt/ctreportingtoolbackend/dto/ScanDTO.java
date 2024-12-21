@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -15,7 +16,7 @@ import java.util.UUID;
 public class ScanDTO {
     private UUID id;
     private String modality;
-    private LocalDate scanDate;
+    private LocalDateTime scanDate;
     private String description;
     private String bodyPart;
     private PatientDTO patient;
