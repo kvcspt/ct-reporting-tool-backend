@@ -39,7 +39,7 @@ public class UserService {
     public UserDTO getUserFromContext(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        User user = userRepository.findByUserName(username).orElseThrow(() -> new NoSuchElementException("User with " + username + "username does not exist!"));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new NoSuchElementException("User with " + username + "username does not exist!"));
         return UserMapper.INSTANCE.fromEntity(user);
     }
     public UserDTO updateUser(@NonNull UserDTO userDTO){
@@ -54,6 +54,7 @@ public class UserService {
         existingUser.setRole(newUser.getRole());
         existingUser.setTitle(newUser.getTitle());
 
+        userRepository.save(existingUser);
         return UserMapper.INSTANCE.fromEntity(existingUser);
     }
 
@@ -78,10 +79,10 @@ public class UserService {
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 
         if(authentication.isAuthenticated()){
-            User dbUser = userRepository.findByUserName(user.getUsername())
+            User dbUser = userRepository.findByUsername(user.getUsername())
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
             String role = dbUser.getRole().toString();
-            return jwtService.generateToken(user.getUsername(), role);
+            return jwtService.generateToken(user.getUsername(), role, dbUser.getId());
         }
         return "Failed";
     }
