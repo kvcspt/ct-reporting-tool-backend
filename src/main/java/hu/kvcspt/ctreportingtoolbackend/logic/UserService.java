@@ -49,10 +49,15 @@ public class UserService {
 
         User newUser = UserMapper.INSTANCE.toEntity(userDTO);
 
-        existingUser.setName(newUser.getName());
-        existingUser.setPassword(newUser.getPassword());
-        existingUser.setRole(newUser.getRole());
-        existingUser.setTitle(newUser.getTitle());
+        if (newUser.getName() != null && !newUser.getName().equals(existingUser.getName())) {
+            existingUser.setName(newUser.getName());
+        }
+        if (newUser.getPassword() != null && !newUser.getPassword().equals(existingUser.getPassword())) {
+            existingUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+        }
+        if (newUser.getTitle() != null && !newUser.getTitle().equals(existingUser.getTitle())) {
+            existingUser.setTitle(newUser.getTitle());
+        }
 
         userRepository.save(existingUser);
         return UserMapper.INSTANCE.fromEntity(existingUser);
