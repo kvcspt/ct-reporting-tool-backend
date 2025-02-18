@@ -2,6 +2,7 @@ package hu.kvcspt.ctreportingtoolbackend.controller.body;
 
 import hu.kvcspt.ctreportingtoolbackend.logic.body.AbdomenService;
 import hu.kvcspt.ctreportingtoolbackend.logic.body.BodyService;
+import hu.kvcspt.ctreportingtoolbackend.logic.body.ChestService;
 import hu.kvcspt.ctreportingtoolbackend.logic.body.KneeService;
 import hu.kvcspt.ctreportingtoolbackend.enums.BodyType;
 import lombok.AllArgsConstructor;
@@ -19,8 +20,9 @@ import java.util.UUID;
 @RequestMapping("api/body")
 @AllArgsConstructor
 public class BodyController {
-    private AbdomenService abdomenService;
+    private final AbdomenService abdomenService;
     private final KneeService kneeService;
+    private final ChestService chestService;
 
     @PostMapping("/html")
     public ResponseEntity<ByteArrayResource> generateHtmlReport(@RequestBody Map<String, Object> formData, @RequestParam("body") String bodyType) {
@@ -29,6 +31,8 @@ public class BodyController {
             bodyService = kneeService;
         } else if(bodyType.equals(BodyType.ABDOMEN.toString().toLowerCase())){
             bodyService = abdomenService;
+        }else if(bodyType.equals(BodyType.CHEST.toString().toLowerCase())){
+            bodyService = chestService;
         }
 
         try {
@@ -54,6 +58,8 @@ public class BodyController {
             bodyService = kneeService;
         } else if(bodyType.equals(BodyType.ABDOMEN.toString().toLowerCase())){
             bodyService = abdomenService;
+        } else if(bodyType.equals(BodyType.CHEST.toString().toLowerCase())){
+            bodyService = chestService;
         }
 
         try {

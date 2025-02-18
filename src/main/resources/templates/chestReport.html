@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Report</title>
+</head>
+<body>
+<h1>Radiology Report</h1>
+
+<div>
+    <h2>Procedure Information</h2>
+    <p th:text="${procedureInformationText}"></p>
+</div>
+
+<div>
+    <h2>Technique</h2>
+    <p th:text="${techniqueText}"></p>
+</div>
+
+<div>
+    <h2>Clinical Information</h2>
+    <p th:text="${clinicalInformationText}"></p>
+</div>
+
+<div>
+    <h2>Comparisons</h2>
+    <p th:text="${comparisonsText}"></p>
+</div>
+
+<h2>Findings</h2>
+
+<div>
+    <h2>Ground Glass Opacity</h2>
+    <h3>Presence</h3>
+    <p th:text="${presenceOfGroundGlassOpacity}"></p>
+    <h3>Laterality</h3>
+    <p th:text="${lateralityOfGroundGlassOpacity}"></p>
+    <h3>Location</h3>
+    <p th:text="${locationOfGroundGlassOpacity}"></p>
+    <h3>Predominant distribution</h3>
+    <p th:text="${predominantDistributionOfGroundGlassOpacity}"></p>
+    <h3>Quantity</h3>
+    <p th:text="${quantityOfGroundGlassOpacity}"></p>
+    <h3>Pattern</h3>
+    <ul>
+        <li th:each="entry : ${patternOfGroundGlassOpacity}">
+            <span th:text="${entry.key} + ': ' + ${entry.value ? 'Yes' : 'No'}"></span>
+        </li>
+    </ul>
+    <h3>Morphology</h3>
+    <p th:text="${morphologyOfGroundGlassOpacity}"></p>
+</div>
+
+<div>
+    <h2>Centrilobular Nodules/Tree-in-bud sign</h2>
+    <p th:text="${centrilobularNodules}"></p>
+</div>
+
+<div>
+    <h2>Solid nodules</h2>
+    <p th:text="${solidNodules}"></p>
+</div>
+
+<div>
+    <h2>Air Space Consolidation</h2>
+    <p th:text="${airSpaceConsolidation}"></p>
+</div>
+
+<div>
+    <h2>Lymphadenopathy</h2>
+    <h3>Presence</h3>
+    <p th:text="${presenceOfLymphadenopathy}"></p>
+    <h3>Location</h3>
+    <ul>
+        <li th:each="entry : ${locationOfLymphadenopathy}">
+            <span th:text="${entry.key} + ': ' + ${entry.value ? 'Yes' : 'No'}"></span>
+        </li>
+    </ul>
+</div>
+
+<div>
+    <h2>Pleural Effusion Size</h2>
+    <p th:text="${pleuralEffusionSize}"></p>
+</div>
+
+<div>
+    <h2>Presence of Mucoid Impaction</h2>
+    <p th:text="${presenceOfMucoidImpaction}"></p>
+</div>
+
+<div>
+    <h2>Presence of Bronchial Wall Thickening</h2>
+    <p th:text="${presenceOfBronchialWallThickening}"></p>
+</div>
+
+<div>
+    <h2>Smooth Interlobular Septal Thickening</h2>
+    <p th:text="${smoothInterlobularSeptalThickeningSeverity}"></p>
+</div>
+
+<div>
+    <h2>Presence of Pulmonary Cavities</h2>
+    <p th:text="${presenceOfPulmonaryCavities}"></p>
+</div>
+
+<div>
+    <h2>Endotracheal Tube</h2>
+    <p th:text="${endotrachealTube}"></p>
+</div>
+
+<div>
+    <h2>Study Quality</h2>
+    <p th:text="${studyQuality}"></p>
+</div>
+
+<div>
+    <h2>Impression</h2>
+    <p th:text="${impressionText}"></p>
+</div>
+
+<div>
+    <h2>COVID Classification</h2>
+    <p th:text="${covidClassification}"></p>
+</div>
+
+</body>
+</html>

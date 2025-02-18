@@ -2,7 +2,8 @@ package hu.kvcspt.ctreportingtoolbackend.enums;
 
 public enum BodyType {
     KNEE("KNEE"),
-    ABDOMEN("ABDOMEN");
+    ABDOMEN("ABDOMEN"),
+    CHEST("CHEST");
 
     private final String value;
 
