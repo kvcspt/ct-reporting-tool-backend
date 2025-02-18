@@ -65,6 +65,9 @@ public class UserService {
 
     public UserDTO createUser(@NonNull UserDTO userDTO){
         User user = UserMapper.INSTANCE.toEntity(userDTO);
+        if(userRepository.existsByUsername(user.getUsername())){
+            throw new IllegalArgumentException("This username already has an account");
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
         return UserMapper.INSTANCE.fromEntity(savedUser);
