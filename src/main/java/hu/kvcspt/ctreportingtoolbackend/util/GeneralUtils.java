@@ -1,6 +1,7 @@
 package hu.kvcspt.ctreportingtoolbackend.util;
 
 import hu.kvcspt.ctreportingtoolbackend.enums.Gender;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -8,6 +9,8 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class GeneralUtils {
     public static LocalDate dateToLocalDate(Date date){
@@ -53,5 +56,21 @@ public class GeneralUtils {
         } else {
             return Gender.OTHER;
         }
+    }
+
+    private static String camelToTitleCase(String camelCase) {
+        return StringUtils.capitalize(StringUtils.join(
+                StringUtils.splitByCharacterTypeCamelCase(camelCase),
+                StringUtils.SPACE
+        ));
+    }
+
+    public static Map<String, Object> transformKeys(Map<String, Object> data) {
+        Map<String, Object> transformedMap = new LinkedHashMap<>();
+        for (Map.Entry<String, Object> entry : data.entrySet()) {
+            String formattedKey = camelToTitleCase(entry.getKey());
+            transformedMap.put(formattedKey, entry.getValue());
+        }
+        return transformedMap;
     }
 }

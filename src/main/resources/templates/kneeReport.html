@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Knee Report</title>
+</head>
+<body>
+<h1>Knee Report</h1>
+
+<h2>Procedure Information</h2>
+<p th:text="${procedureInformationText}"></p>
+
+<h2>Clinical Information</h2>
+<p th:text="${clinicalInformationText}"></p>
+
+<h2>Comparisons</h2>
+<p th:text="${comparisonsText}"></p>
+
+<h2>Findings</h2>
+<p th:text="${findingsText}"></p>
+
+<h3>Fracture Type</h3>
+<ul>
+    <li th:each="entry : ${fractureType}">
+        <span th:text="${entry.key} + ': ' + ${entry.value ? 'Yes' : 'No'}"></span>
+    </li>
+</ul>
+
+<h3>Fracture Features</h3>
+<ul>
+    <li th:each="entry : ${fractureFeatures}">
+        <span th:text="${entry.key} + ': ' + ${entry.value ? 'Yes' : 'No'}"></span>
+    </li>
+</ul>
+
+<h3>Soft Tissue Injuries</h3>
+<ul>
+    <li th:each="entry : ${softTissueInjuries}">
+        <span th:text="${entry.key} + ': ' + ${entry.value ? 'Yes' : 'No'}"></span>
+    </li>
+</ul>
+
+<h3>Tibial Plateau Columns</h3>
+<ul>
+    <li th:each="entry : ${tibialPlateauColumns}">
+        <span th:text="${entry.key} + ': ' + ${entry.value ? 'Yes' : 'No'}"></span>
+    </li>
+</ul>
+
+<h3>Three Column Classification</h3>
+<ul>
+    <li th:each="entry : ${threeColumnClassification}">
+        <span th:text="${entry.key} + ': ' + ${entry.value ? 'Yes' : 'No'}"></span>
+    </li>
+</ul>
+
+<h3>Bone Findings</h3>
+<p th:text="${boneFindings}"></p>
+
+<h3>Alignment</h3>
+<p th:text="${alignment}"></p>
+
+<h3>Joint Spaces</h3>
+<p th:text="${jointSpaces}"></p>
+
+<h3>Knee Joint Effusion</h3>
+<p th:text="${kneeJointEffusion}"></p>
+
+<h3>Lipohemarthrosis</h3>
+<p th:text="${lipohemarthrosis}"></p>
+
+<h3>Extensor Mechanism</h3>
+<p th:text="${extensorMechanism}"></p>
+
+<h3>Ligaments</h3>
+<p th:text="${ligaments}"></p>
+
+<h3>Baker's Cyst</h3>
+<p th:text="${bakersCyst}"></p>
+
+<h3>Soft Tissue</h3>
+<p th:text="${softTissue}"></p>
+
+<h3>Impression</h3>
+<p th:text="${impression}"></p>
+</body>
+</html>
