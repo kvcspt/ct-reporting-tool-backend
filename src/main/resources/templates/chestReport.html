@@ -9,11 +9,9 @@
 
 <div>
     <h2>Procedure Information</h2>
+    <h3>Exam</h3>
     <p th:text="${procedureInformationText}"></p>
-</div>
-
-<div>
-    <h2>Technique</h2>
+    <h3>Technique</h3>
     <p th:text="${techniqueText}"></p>
 </div>
 
@@ -23,93 +21,85 @@
 </div>
 
 <div>
-    <h2>Comparisons</h2>
+    <h2>Comparison</h2>
     <p th:text="${comparisonsText}"></p>
 </div>
 
 <h2>Findings</h2>
 
 <div>
-    <h2>Ground Glass Opacity</h2>
+    <h2>Ground Glass Opacity (GGO)</h2>
+
     <h3>Presence</h3>
     <p th:text="${presenceOfGroundGlassOpacity}"></p>
+
     <h3>Laterality</h3>
     <p th:text="${lateralityOfGroundGlassOpacity}"></p>
+
     <h3>Location</h3>
     <p th:text="${locationOfGroundGlassOpacity}"></p>
+
     <h3>Predominant distribution</h3>
     <p th:text="${predominantDistributionOfGroundGlassOpacity}"></p>
+
     <h3>Quantity</h3>
     <p th:text="${quantityOfGroundGlassOpacity}"></p>
+
     <h3>Pattern</h3>
     <ul>
         <li th:each="entry : ${patternOfGroundGlassOpacity}">
             <span th:text="${entry.key} + ': ' + ${entry.value ? 'Yes' : 'No'}"></span>
         </li>
     </ul>
+
     <h3>Morphology</h3>
     <p th:text="${morphologyOfGroundGlassOpacity}"></p>
-</div>
 
-<div>
-    <h2>Centrilobular Nodules/Tree-in-bud sign</h2>
+    <h3>Centrilobular Nodules/Tree-in-bud sign</h3>
     <p th:text="${centrilobularNodules}"></p>
-</div>
 
-<div>
-    <h2>Solid nodules</h2>
+    <h3>Centrilobular Nodules/Tree-in-bud sign</h3>
+    <p th:text="${centrilobularNodules}"></p>
+
+    <h3>Solid nodules</h3>
     <p th:text="${solidNodules}"></p>
-</div>
 
-<div>
-    <h2>Air Space Consolidation</h2>
+    <h3>Air Space Consolidation</h3>
     <p th:text="${airSpaceConsolidation}"></p>
+
 </div>
 
 <div>
     <h2>Lymphadenopathy</h2>
     <h3>Presence</h3>
     <p th:text="${presenceOfLymphadenopathy}"></p>
+
     <h3>Location</h3>
     <ul>
         <li th:each="entry : ${locationOfLymphadenopathy}">
             <span th:text="${entry.key} + ': ' + ${entry.value ? 'Yes' : 'No'}"></span>
         </li>
     </ul>
-</div>
 
-<div>
-    <h2>Pleural Effusion Size</h2>
+    <h3>Pleural Effusion Size</h3>
     <p th:text="${pleuralEffusionSize}"></p>
-</div>
 
-<div>
-    <h2>Presence of Mucoid Impaction</h2>
+    <h3>Presence of Mucoid Impaction</h3>
     <p th:text="${presenceOfMucoidImpaction}"></p>
-</div>
 
-<div>
-    <h2>Presence of Bronchial Wall Thickening</h2>
+    <h3>Presence of Bronchial Wall Thickening</h3>
     <p th:text="${presenceOfBronchialWallThickening}"></p>
-</div>
 
-<div>
-    <h2>Smooth Interlobular Septal Thickening</h2>
+    <h3>Smooth Interlobular Septal Thickening</h3>
     <p th:text="${smoothInterlobularSeptalThickeningSeverity}"></p>
-</div>
 
-<div>
-    <h2>Presence of Pulmonary Cavities</h2>
+    <h3>Presence of Pulmonary Cavities</h3>
     <p th:text="${presenceOfPulmonaryCavities}"></p>
-</div>
 
-<div>
-    <h2>Endotracheal Tube</h2>
+    <h3>Endotracheal Tube</h3>
     <p th:text="${endotrachealTube}"></p>
-</div>
 
-<div>
-    <h2>Study Quality</h2>
+    <h3>Study Quality</h3>
     <p th:text="${studyQuality}"></p>
 </div>
 

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Radiology Report</title>
+</head>
+<body>
+<h1>Radiology Report</h1>
+<div th:each="field : ${formData}">
+    <h2 th:if="${#strings.isEmpty(field.name)}" th:text="${field.label}"></h2>
+    <h3 th:unless="${#strings.isEmpty(field.name)}" th:text="${field.label}"></h3>
+
+    <p th:text="${field.value}"></p>
+</div>
+
+</body>
+</html>

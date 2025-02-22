@@ -5,6 +5,7 @@ import hu.kvcspt.ctreportingtoolbackend.logic.body.BodyService;
 import hu.kvcspt.ctreportingtoolbackend.logic.body.ChestService;
 import hu.kvcspt.ctreportingtoolbackend.logic.body.KneeService;
 import hu.kvcspt.ctreportingtoolbackend.enums.BodyType;
+import hu.kvcspt.ctreportingtoolbackend.logic.BodyService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -20,21 +21,10 @@ import java.util.UUID;
 @RequestMapping("api/body")
 @AllArgsConstructor
 public class BodyController {
-    private final AbdomenService abdomenService;
-    private final KneeService kneeService;
-    private final ChestService chestService;
+    private final BodyService bodyService;
 
-    @PostMapping("/html")
-    public ResponseEntity<ByteArrayResource> generateHtmlReport(@RequestBody Map<String, Object> formData, @RequestParam("body") String bodyType) {
-        BodyService bodyService = null;
-        if (bodyType.equals(BodyType.KNEE.toString().toLowerCase())){
-            bodyService = kneeService;
-        } else if(bodyType.equals(BodyType.ABDOMEN.toString().toLowerCase())){
-            bodyService = abdomenService;
-        }else if(bodyType.equals(BodyType.CHEST.toString().toLowerCase())){
-            bodyService = chestService;
-        }
-
+    @PostMapping("/dynamic/html")
+    public ResponseEntity<ByteArrayResource> generateDynamicHtmlReport(@RequestBody @Valid List<BodyReportDTO> formData) {
         try {
             String htmlContent = bodyService.generateHtml(formData);
             byte[] htmlBytes = htmlContent.getBytes(StandardCharsets.UTF_8);
@@ -51,17 +41,8 @@ public class BodyController {
         }
     }
 
-    @PostMapping("/pdf")
-    public ResponseEntity<ByteArrayResource> kneeHtml(@RequestBody Map<String, Object> formData, @RequestParam("body") String bodyType){
-        BodyService bodyService = null;
-        if (bodyType.equals(BodyType.KNEE.toString().toLowerCase())){
-            bodyService = kneeService;
-        } else if(bodyType.equals(BodyType.ABDOMEN.toString().toLowerCase())){
-            bodyService = abdomenService;
-        } else if(bodyType.equals(BodyType.CHEST.toString().toLowerCase())){
-            bodyService = chestService;
-        }
-
+    @PostMapping("/dynamic/pdf")
+    public ResponseEntity<ByteArrayResource> generateDynamicPdfReport(@RequestBody @Valid List<BodyReportDTO> formData) {
         try {
             assert bodyService != null;
             String htmlContent = bodyService.generateHtml(formData);

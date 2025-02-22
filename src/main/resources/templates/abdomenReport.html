@@ -8,6 +8,8 @@
 
 <div>
   <h2>Procedure Information</h2>
+
+  <h3>Exam</h3>
   <p th:text="${procedureInformationText}"></p>
 </div>
 
@@ -22,31 +24,36 @@
 </div>
 
 <div>
-  <h2>Comparisons</h2>
+  <h2>Comparison</h2>
   <p th:text="${comparisonsText}"></p>
 </div>
 
 <div>
   <h2>Findings</h2>
+  <p>Lower chest</p>
+  <p>Lung bases / pleura</p>
   <p th:text="${findingsText}"></p>
 </div>
 
 <div>
-  <h3>Distal Esophagus</h3>
+  <h3>Distal esophagus</h3>
   <p th:text="${distalEsophagus}"></p>
 </div>
 
 <div>
-  <h3>Heart Vessels</h3>
+  <h3>Heart / vessels</h3>
   <p th:text="${heartVessels}"></p>
 </div>
 
 <div>
-  <h3>Other Information</h3>
+  <h3>Other</h3>
   <p th:text="${other}"></p>
 </div>
 
 <div>
+  <p>Abdomen</p>
+  <p>Kidneys</p>
+  <p>Renal mass</p>
   <h3>Brief Description</h3>
   <p th:text="${briefDescription}"></p>
 </div>
@@ -67,7 +74,7 @@
 </div>
 
 <div>
-  <h3>Bosniak Classification</h3>
+  <h3>Bosniak classification</h3>
   <p th:text="${bosniakClassification}"></p>
 </div>
 
@@ -82,27 +89,28 @@
 </div>
 
 <div>
-  <h3>Non-enhanced Phase Attenuation</h3>
-  <p th:text="${nonenhancedPhaseAttenuation}"></p>
+  <h3>Non-enhanced phase attenuation</h3>
+  <p th:text="${nonenhancedPhaseAttenuation} HU"></p>
 </div>
 
 <div>
-  <h3>Corticomedullary Phase Attenuation</h3>
-  <p th:text="${corticomedullaryPhaseAttenuation}"></p>
+  <h3>Corticomedullary phase attenuation</h3>
+  <p th:text="${corticomedullaryPhaseAttenuation} HU"></p>
 </div>
 
 <div>
-  <h3>Nephrographic Phase Attenuation</h3>
-  <p th:text="${nephrographicPhaseAttenuation}"></p>
+  <h3>Nephrographic phase attenuation</h3>
+  <p th:text="${nephrographicPhaseAttenuation} HU"></p>
 </div>
 
 <div>
+  <h3>Nephrometry score</h3>
   <h3>Radius</h3>
   <p th:text="${radius}"></p>
 </div>
 
 <div>
-  <h3>Exophytic Extent</h3>
+  <h3>Exophytic extent</h3>
   <p th:text="${exophyticExtent}"></p>
 </div>
 
@@ -112,32 +120,33 @@
 </div>
 
 <div>
-  <h3>Polar Location</h3>
+  <h3>Polar location of mass</h3>
   <p th:text="${polarLocation}"></p>
 </div>
 
 <div>
-  <h3>Axial Location</h3>
+  <h3>Axial location</h3>
   <p th:text="${axialLocation}"></p>
 </div>
 
 <div>
-  <h3>Hilar Extent</h3>
+  <h3>Hilar extent</h3>
   <p th:text="${hilarExtent}"></p>
 </div>
 
 <div>
-  <h3>Nephrometry Score</h3>
+  <h3>Nephrometry score (points)</h3>
   <p th:text="${nephrometryScore}"></p>
 </div>
 
 <div>
-  <h3>Invades Perirenal Fat</h3>
+  <h3>Local extent of disease</h3>
+  <h3>Invades perirenal fat</h3>
   <p th:text="${invadesPerirenalFat}"></p>
 </div>
 
 <div>
-  <h3>Contacts Perirenal Fascia</h3>
+  <h3>Contacts the perirenal fascia</h3>
   <p th:text="${contactsPerirenalFascia}"></p>
 </div>
 
@@ -147,47 +156,48 @@
 </div>
 
 <div>
-  <h3>Invades Central Sinus Fat</h3>
+  <h3>Invades central sinus fat</h3>
   <p th:text="${invadesCentralSinusFat}"></p>
 </div>
 
 <div>
-  <h3>Invades Collecting System</h3>
+  <h3>Invades collecting system</h3>
   <p th:text="${invadesCollectingSystem}"></p>
 </div>
 
 <div>
-  <h3>Invades Ipsilateral Adrenal</h3>
+  <h3>Invades ipsilateral adrenal</h3>
   <p th:text="${invadesIpsilateralAdrenal}"></p>
 </div>
 
 <div>
-  <h3>Invades Adjacent Organs</h3>
+  <h3>Invades adjacent organs or structures</h3>
   <p th:text="${invadesAdjacentOrgans}"></p>
 </div>
 
 <div>
-  <h3>Renal Artery</h3>
+  <h3>Ipsilateral vessels</h3>
+  <h3>Renal artery</h3>
   <p th:text="${renalArtery}"></p>
 </div>
 
 <div>
-  <h3>Renal Vein Anatomy</h3>
-  <p th:text="${renalVeinAnatomy}"></p>
-</div>
-
-<div>
-  <h3>Renal Artery Stenosis</h3>
+  <h3>Significant renal artery stenosis >70%</h3>
   <p th:text="${renalArteryStenosis}"></p>
 </div>
 
 <div>
-  <h3>Renal Vein Thrombus</h3>
+  <h3>Renal vein anatomy</h3>
+  <p th:text="${renalVeinAnatomy}"></p>
+</div>
+
+<div>
+  <h3>Renal vein thrombus</h3>
   <p th:text="${renalVeinThrombus}"></p>
 </div>
 
 <div>
-  <h3>Renal Vein Thrombus Text</h3>
+  <h3>Renal vein thrombus</h3>
   <p th:text="${renalVeinThrombusText}"></p>
 </div>
 
@@ -197,37 +207,38 @@
 </div>
 
 <div>
-  <h3>IVC Thrombus Text</h3>
+  <h3>IVC Thrombus</h3>
   <p th:text="${ivcThrombusText}"></p>
 </div>
 
 <div>
-  <h3>Other Renal Findings</h3>
+  <h3>Other renal findings</h3>
   <p th:text="${otherRenalFindings}"></p>
 </div>
 
 <div>
-  <h3>Direct Invasions by Renal Mass</h3>
+  <h3>Adrenals</h3>
+  <h3>Direct invasions by renal mass</h3>
   <p th:text="${directInvasionsByRenalMass}"></p>
 </div>
 
 <div>
-  <h3>Adrenal Nodule</h3>
+  <h3>Adrenal nodule</h3>
   <p th:text="${adrenalNodule}"></p>
 </div>
 
 <div>
-  <h3>Other Findings</h3>
+  <h3>Other findings</h3>
   <p th:text="${otherFindings}"></p>
 </div>
 
 <div>
-  <h3>Retroperitoneal and Pararenal Lymph Nodes</h3>
+  <h3>Retroperitoneal and pararenal lymph nodes</h3>
   <p th:text="${retroperitonealAndPararenalLymphNodes}"></p>
 </div>
 
 <div>
-  <h3>Other Lymph Nodes</h3>
+  <h3>Other lymph nodes</h3>
   <p th:text="${otherLymphNodes}"></p>
 </div>
 
@@ -237,7 +248,7 @@
 </div>
 
 <div>
-  <h3>Billiary Tract</h3>
+  <h3>Billiary tract</h3>
   <p th:text="${billiaryTract}"></p>
 </div>
 
@@ -257,17 +268,17 @@
 </div>
 
 <div>
-  <h3>Stomach and Small Bowel</h3>
+  <h3>Stomach and small bowel</h3>
   <p th:text="${stomachAndAmallBowel}"></p>
 </div>
 
 <div>
-  <h3>Colon and Appendix</h3>
+  <h3>Colon and appendix</h3>
   <p th:text="${colonAndAppendix}"></p>
 </div>
 
 <div>
-  <h3>Peritoneum and Mesentery</h3>
+  <h3>Peritoneum and mesentery</h3>
   <p th:text="${peritoneumAndMesentery}"></p>
 </div>
 
@@ -277,12 +288,12 @@
 </div>
 
 <div>
-  <h3>Other Vessels</h3>
+  <h3>Other vessels</h3>
   <p th:text="${otherVessels}"></p>
 </div>
 
 <div>
-  <h3>Body Wall</h3>
+  <h3>Body wall</h3>
   <p th:text="${bodyWall}"></p>
 </div>
 
@@ -292,17 +303,18 @@
 </div>
 
 <div>
-  <h3>Tumor T</h3>
+  <h3>TNM Stage</h3>
+  <h3>Tumor (T)</h3>
   <p th:text="${tumorT}"></p>
 </div>
 
 <div>
-  <h3>Node N</h3>
+  <h3>Node (N)</h3>
   <p th:text="${nodeN}"></p>
 </div>
 
 <div>
-  <h3>Metastasis M</h3>
+  <h3>Metastasis (M)</h3>
   <p th:text="${metastasisM}"></p>
 </div>
 

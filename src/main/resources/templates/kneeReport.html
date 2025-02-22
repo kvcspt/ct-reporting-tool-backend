@@ -7,78 +7,85 @@
 <h1>Knee Report</h1>
 
 <h2>Procedure Information</h2>
+
+<h3>Technique</h3>
 <p th:text="${procedureInformationText}"></p>
 
 <h2>Clinical Information</h2>
+<h3>History</h3>
 <p th:text="${clinicalInformationText}"></p>
 
 <h2>Comparisons</h2>
 <p th:text="${comparisonsText}"></p>
 
 <h2>Findings</h2>
+
+<div>
+<h3>Fracture</h3>
 <p th:text="${findingsText}"></p>
 
-<h3>Fracture Type</h3>
+<h3>Type of fracture</h3>
 <ul>
     <li th:each="entry : ${fractureType}">
         <span th:text="${entry.key} + ': ' + ${entry.value ? 'Yes' : 'No'}"></span>
     </li>
 </ul>
 
-<h3>Fracture Features</h3>
+<h3>Fracture features</h3>
 <ul>
     <li th:each="entry : ${fractureFeatures}">
         <span th:text="${entry.key} + ': ' + ${entry.value ? 'Yes' : 'No'}"></span>
     </li>
 </ul>
 
-<h3>Soft Tissue Injuries</h3>
+<h3>Associated soft tissue injuries</h3>
 <ul>
     <li th:each="entry : ${softTissueInjuries}">
         <span th:text="${entry.key} + ': ' + ${entry.value ? 'Yes' : 'No'}"></span>
     </li>
 </ul>
 
-<h3>Tibial Plateau Columns</h3>
+<h3>Columns involved if tibial plateau fracture</h3>
 <ul>
     <li th:each="entry : ${tibialPlateauColumns}">
         <span th:text="${entry.key} + ': ' + ${entry.value ? 'Yes' : 'No'}"></span>
     </li>
 </ul>
 
-<h3>Three Column Classification</h3>
+<h3>Three column classification if tibial plateau fracture</h3>
 <ul>
     <li th:each="entry : ${threeColumnClassification}">
         <span th:text="${entry.key} + ': ' + ${entry.value ? 'Yes' : 'No'}"></span>
     </li>
 </ul>
 
-<h3>Bone Findings</h3>
+<h3>Additional bone findings</h3>
 <p th:text="${boneFindings}"></p>
 
 <h3>Alignment</h3>
 <p th:text="${alignment}"></p>
 
-<h3>Joint Spaces</h3>
+<h3>Joint spaces</h3>
 <p th:text="${jointSpaces}"></p>
 
-<h3>Knee Joint Effusion</h3>
+<h3>Knee joint effusion</h3>
 <p th:text="${kneeJointEffusion}"></p>
 
 <h3>Lipohemarthrosis</h3>
 <p th:text="${lipohemarthrosis}"></p>
 
-<h3>Extensor Mechanism</h3>
+<h3>Extensor mechanism</h3>
 <p th:text="${extensorMechanism}"></p>
 
 <h3>Ligaments</h3>
 <p th:text="${ligaments}"></p>
 
-<h3>Baker's Cyst</h3>
+<h3>Baker's cyst</h3>
 <p th:text="${bakersCyst}"></p>
 
-<h3>Soft Tissue</h3>
+<h3>Soft tissue</h3>
 <p th:text="${softTissue}"></p>
+</div>
 
 <h3>Impression</h3>
 <p th:text="${impression}"></p>
