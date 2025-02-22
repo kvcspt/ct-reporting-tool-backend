@@ -12,5 +12,6 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 public class BodyTemplateDTO {
+    private String title;
     private List<BodyTemplateElementDTO> bodyTemplateElementDTOs;
 }

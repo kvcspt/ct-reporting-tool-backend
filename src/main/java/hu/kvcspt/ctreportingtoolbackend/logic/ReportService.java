@@ -208,12 +208,12 @@ public class ReportService {
     }
 
     private String resolvePlaceholder(String placeholder, Object rootObject) {
-        String[] path = placeholder.split("\\."); // e.g., ["Scan", "performer"]
+        String[] path = placeholder.split("\\.");
         Object currentObject = rootObject;
 
         for (String fieldName : path) {
             if (currentObject == null) {
-                return ""; // If any part of the hierarchy is null, return empty string
+                return "";
             }
 
             if(Objects.equals(fieldName, FieldExtractor.OTHER)){
@@ -221,16 +221,14 @@ public class ReportService {
             }
 
             try {
-                // Ha a mező egy ismert osztálynév (pl. "Scan"), akkor navigáljunk az osztály megfelelő mezőjére
                 if (isModelClass(fieldName)) {
                     currentObject = navigateToModelClass(fieldName, rootObject);
                     if (currentObject == null) {
-                        return ""; // Nem található megfelelő osztálypéldány
+                        return "";
                     }
-                    continue; // Lépjünk a következő mezőre
+                    continue;
                 }
 
-                // Ha nem osztálynév, akkor próbáljuk meg elérni az aktuális objektum mezőjét
                 Field field = currentObject.getClass().getDeclaredField(fieldName);
                 field.setAccessible(true);
                 currentObject = field.get(currentObject);
@@ -255,20 +253,16 @@ public class ReportService {
 
     private Object navigateToModelClass(String className, Object rootObject) {
         if (rootObject instanceof ReportDTO report) {
-
-            // Példa: külön mezőkezelés, ha osztálynév "Scan"
             if (className.equals("Scan") && report.getScan() != null) {
-                return report.getScan(); // Első Scan objektumot használja
+                return report.getScan();
             }
 
             if (className.equals("Patient") && report.getPatient() != null) {
-                return report.getPatient(); // Navigálj a Patient példányra
+                return report.getPatient();
             }
-
-            // Egyéb típusok kezelése hasonlóan
         }
 
-        return null; // Ha nem található megfelelő osztálypéldány
+        return null;
     }
 
 }

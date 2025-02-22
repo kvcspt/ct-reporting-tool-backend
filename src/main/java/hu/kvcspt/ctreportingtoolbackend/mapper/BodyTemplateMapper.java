@@ -9,7 +9,7 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface BodyTemplateMapper {
     BodyTemplateMapper INSTANCE = Mappers.getMapper(BodyTemplateMapper.class);
-
+    @Mapping(target = "bodyTemplateElements", source = "bodyTemplateElementDTOs")
     BodyTemplate toEntity(BodyTemplateDTO bodyTemplateDTO);
     @Mapping(target = "bodyTemplateElementDTOs", source = "bodyTemplateElements")
     BodyTemplateDTO fromEntity(BodyTemplate bodyTemplate);

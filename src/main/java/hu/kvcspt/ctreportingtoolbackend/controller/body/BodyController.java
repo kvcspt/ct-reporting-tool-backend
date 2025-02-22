@@ -74,6 +74,23 @@ public class BodyController {
         return ResponseEntity.ok(bodyService.getTemplates());
     }
 
+    @PutMapping("/templates")
+    public ResponseEntity<BodyTemplateDTO> updateTemplate(@RequestBody BodyTemplateDTO bodyTemplateDTO){
+        return ResponseEntity.ok(bodyService.updateTemplate(bodyTemplateDTO));
+    }
+
+    @DeleteMapping("/templates/{title}")
+    public ResponseEntity<?> deleteTemplate(@PathVariable(name = "title") String title){
+        try {
+            bodyService.deleteBodyTemplate(title);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     private String generateFilename(String ext){
         return UUID.randomUUID()+"."+ext;
     }
