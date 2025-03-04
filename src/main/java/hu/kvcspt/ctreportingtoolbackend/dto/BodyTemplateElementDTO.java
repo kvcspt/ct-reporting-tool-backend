@@ -18,5 +18,6 @@ public class BodyTemplateElementDTO {
     private String name;
     @NotNull
     private String type;
+    private boolean duplicate;
     private List<String> options;
 }

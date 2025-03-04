@@ -29,6 +29,7 @@ public class BodyTemplateElement {
 
     @NotNull
     private String type;
+    private boolean duplicate;
 
     @ElementCollection
     @CollectionTable(name = "body_template_element_options", joinColumns = @JoinColumn(name = "element_id"))

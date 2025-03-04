@@ -8,9 +8,18 @@
 <h1>Radiology Report</h1>
 <div th:each="field : ${formData}">
     <h2 th:if="${#strings.isEmpty(field.name)}" th:text="${field.label}"></h2>
+
     <h3 th:unless="${#strings.isEmpty(field.name)}" th:text="${field.label}"></h3>
 
-    <p th:text="${field.value}"></p>
+    <div th:if="${field.value.class.name == 'java.lang.String'}">
+        <p th:text="${field.value}"></p>
+    </div>
+
+    <div th:unless="${field.value.class.name == 'java.lang.String'}">
+        <div th:each="item : ${field.value}">
+            <p th:text="${item}"></p>
+        </div>
+    </div>
 </div>
 
 </body>

@@ -22,7 +22,7 @@ public class BodyController {
     private final BodyService bodyService;
 
     @PostMapping("/dynamic/html")
-    public ResponseEntity<ByteArrayResource> generateDynamicHtmlReport(@RequestBody @Valid List<BodyReportDTO> formData) {
+    public ResponseEntity<ByteArrayResource> generateDynamicHtmlReport(@RequestBody List<BodyReportDTO> formData) {
         try {
             String htmlContent = bodyService.generateHtml(formData);
             byte[] htmlBytes = htmlContent.getBytes(StandardCharsets.UTF_8);
@@ -40,7 +40,7 @@ public class BodyController {
     }
 
     @PostMapping("/dynamic/pdf")
-    public ResponseEntity<ByteArrayResource> generateDynamicPdfReport(@RequestBody @Valid List<BodyReportDTO> formData) {
+    public ResponseEntity<ByteArrayResource> generateDynamicPdfReport(@RequestBody List<BodyReportDTO> formData) {
         try {
             String htmlContent = bodyService.generateHtml(formData);
 
