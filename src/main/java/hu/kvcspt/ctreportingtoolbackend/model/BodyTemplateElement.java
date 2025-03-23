@@ -21,6 +21,8 @@ public class BodyTemplateElement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private int groupId;
+
     @NotNull
     private String label;
 

@@ -12,6 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 public class BodyTemplateElementDTO {
+    private int groupId;
     @NotNull
     private String label;
     @NotNull
