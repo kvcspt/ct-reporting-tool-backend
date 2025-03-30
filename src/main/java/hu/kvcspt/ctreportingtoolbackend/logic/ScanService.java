@@ -6,6 +6,7 @@ import hu.kvcspt.ctreportingtoolbackend.enums.Gender;
 import hu.kvcspt.ctreportingtoolbackend.util.DicomUtils;
 import hu.kvcspt.ctreportingtoolbackend.util.GeneralUtils;
 import jakarta.annotation.Nullable;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.Tag;
@@ -20,8 +21,9 @@ import java.util.*;
 
 @Service
 @Log4j2
+@Getter
 public class ScanService {
-    private static final String INSTANCES_URL = "/instances";
+    public static final String INSTANCES_URL = "/instances";
     private static final String STUDIES_URL = "/studies";
     private static final String SERIES_URL = "/series";
     private static final String MAIN_DICOM_TAGS = "MainDicomTags";
@@ -91,15 +93,13 @@ public class ScanService {
     @Nullable
     private List<Map<String, Object>> fetchSeriesList(String studyId, RestTemplate restTemplate) {
         String seriesUrl = orthancServerUrl + STUDIES_URL + "/" + studyId + SERIES_URL;
-        List<Map<String, Object>> seriesList = restTemplate.getForObject(seriesUrl, List.class);
-        return seriesList;
+        return restTemplate.getForObject(seriesUrl, List.class);
     }
 
     @Nullable
     private Map<String, Object> fetchStudyDetails(String studyId, RestTemplate restTemplate) {
         String studyUrl = orthancServerUrl + STUDIES_URL + "/" + studyId;
-        Map<String, Object> studyDetails = restTemplate.getForObject(studyUrl, Map.class);
-        return studyDetails;
+        return restTemplate.getForObject(studyUrl, Map.class);
     }
 
     @Nullable

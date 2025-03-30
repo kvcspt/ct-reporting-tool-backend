@@ -3,11 +3,10 @@ package hu.kvcspt.ctreportingtoolbackend.controller;
 import hu.kvcspt.ctreportingtoolbackend.dto.BodyReportDTO;
 import hu.kvcspt.ctreportingtoolbackend.dto.BodyTemplateDTO;
 import hu.kvcspt.ctreportingtoolbackend.dto.DicomSRDTO;
-import hu.kvcspt.ctreportingtoolbackend.dto.ScanDTO;
 import hu.kvcspt.ctreportingtoolbackend.logic.BodyService;
 import hu.kvcspt.ctreportingtoolbackend.logic.ScanService;
 import lombok.AllArgsConstructor;
-import net.sourceforge.plantuml.utils.Log;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
@@ -23,6 +22,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("api/body")
+@Log4j2
 @AllArgsConstructor
 public class BodyController {
     private final BodyService bodyService;
@@ -106,7 +106,7 @@ public class BodyController {
 
             return uploadToOrthanc(srFile);
         } catch (Exception e) {
-            Log.error(e.getMessage());
+            log.error(e.getMessage());
             return new ResponseEntity<>("Failed to create/upload SR", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
