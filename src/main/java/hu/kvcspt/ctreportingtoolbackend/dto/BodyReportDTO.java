@@ -16,5 +16,5 @@ public class BodyReportDTO {
     public String label;
     @NotNull
     public String type;
-    public Object value;
+    public String value;
 }
