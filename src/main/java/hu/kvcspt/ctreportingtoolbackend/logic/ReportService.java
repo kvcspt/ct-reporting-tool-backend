@@ -9,9 +9,7 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import hu.kvcspt.ctreportingtoolbackend.dto.LesionDTO;
-import hu.kvcspt.ctreportingtoolbackend.dto.ReportDTO;
-import hu.kvcspt.ctreportingtoolbackend.dto.ReportTemplateDTO;
+import hu.kvcspt.ctreportingtoolbackend.dto.*;
 import hu.kvcspt.ctreportingtoolbackend.mapper.ReportMapper;
 import hu.kvcspt.ctreportingtoolbackend.model.Lesion;
 import hu.kvcspt.ctreportingtoolbackend.model.Report;
@@ -26,10 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -91,10 +86,11 @@ public class ReportService {
 
         return outputStream.toByteArray();
     }
-    public String generateDiagnosticReport(ReportDTO reportDTO) {
-        Report report = ReportMapper.INSTANCE.toEntity(reportDTO);
+
+    public String generateDiagnosticReport(FhirSRDTO fhirSRDTO) {
+        Report report = ReportMapper.INSTANCE.toEntity(fhirSRDTO.getReport());
         report.setCreatedDate(LocalDateTime.now());
-        DiagnosticReport diagnosticReport = toFhirDiagnosticReport(report,false);
+        DiagnosticReport diagnosticReport = toFhirDiagnosticReport(report,fhirSRDTO.getForm(),false);
         FhirContext ctxR5 = FhirContext.forR5();
         IParser jsonParser = ctxR5.newJsonParser();
         jsonParser.setPrettyPrint(true);
@@ -114,7 +110,7 @@ public class ReportService {
         Map<String, String> filledSections = reportDTO.getSections();
 
         for (Map.Entry<String, String> entry : template.getSections().entrySet()) {
-            String placeholder = entry.getValue(); // e.g., "Patient.name"
+            String placeholder = entry.getValue();
             String resolvedValue = resolvePlaceholder(placeholder, reportDTO);
             filledSections.put(entry.getKey(), resolvedValue);
         }
@@ -122,15 +118,14 @@ public class ReportService {
         return reportDTO;
     }
 
-    public DiagnosticReport uploadToFhirServer(ReportDTO reportDTO) {
-        reportDTO.setCreatedDate(LocalDateTime.now());
-        Report report = ReportMapper.INSTANCE.toEntity(reportDTO);
-        return toFhirDiagnosticReport(report,true);
+    public DiagnosticReport uploadToFhirServer(FhirSRDTO fhirSRDTO) {
+        fhirSRDTO.getReport().setCreatedDate(LocalDateTime.now());
+        Report report = ReportMapper.INSTANCE.toEntity(fhirSRDTO.getReport());
+        return toFhirDiagnosticReport(report, fhirSRDTO.getForm(), true);
     }
 
-    public DiagnosticReport toFhirDiagnosticReport(Report report, boolean upload) {
+    public DiagnosticReport toFhirDiagnosticReport(Report report, List<BodyReportDTO> form, boolean upload) {
         org.hl7.fhir.r5.model.Patient fhirPatient = report.getPatient().toFhirPatient();
-
 
         DiagnosticReport diagnosticReport = new DiagnosticReport();
         diagnosticReport.setId(String.valueOf(report.getId()));
@@ -148,6 +143,21 @@ public class ReportService {
             }
         }
 
+        if (form != null && !form.isEmpty()) {
+            for (BodyReportDTO entry : form) {
+                Observation srObservation = new Observation();
+                srObservation.setStatus(Enumerations.ObservationStatus.FINAL);
+                srObservation.setCode(new CodeableConcept().setText(entry.getLabel()));
+                srObservation.setValue(new StringType(entry.getValue()));
+
+                if (upload) {
+                    client.validateAndCreate(srObservation);
+                }
+
+                diagnosticReport.addResult(new Reference(srObservation));
+            }
+        }
+
         if(upload){
             Patient createdPatient = client.validateAndCreate(fhirPatient);
             diagnosticReport.setSubject(new Reference(createdPatient));
@@ -155,9 +165,16 @@ public class ReportService {
 
         if(report.getScan() != null){
             ImagingStudy imagingStudy = report.getScan().toImagingStudy((Patient) diagnosticReport.getSubject().getResource());
+            Extension reportReferenceExtension = new Extension();
+            reportReferenceExtension.setUrl("http://example.org/fhir/StructureDefinition/diagnosticReportReference");
+            reportReferenceExtension.setValue(new Reference(diagnosticReport));
+
+            imagingStudy.addExtension(reportReferenceExtension);
+
             if (upload){
                 client.validateAndCreate(imagingStudy);
             }
+
             diagnosticReport = diagnosticReport.addStudy(new Reference(imagingStudy));
         }
 

@@ -1,6 +1,7 @@
 package hu.kvcspt.ctreportingtoolbackend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hu.kvcspt.ctreportingtoolbackend.dto.FhirSRDTO;
 import hu.kvcspt.ctreportingtoolbackend.dto.ReportDTO;
 import hu.kvcspt.ctreportingtoolbackend.dto.ReportTemplateDTO;
 import hu.kvcspt.ctreportingtoolbackend.dto.ScanDTO;
@@ -85,12 +86,12 @@ public final class ReportController {
     }
 
     @PostMapping("/fhir-json")
-    public ResponseEntity<byte[]> saveAsFhirJson(@RequestBody ReportDTO reportDTO) {
+    public ResponseEntity<byte[]> saveAsFhirJson(@RequestBody FhirSRDTO body) {
         try {
-            String fhirJson = this.reportService.generateDiagnosticReport(reportDTO);
+            String fhirJson = this.reportService.generateDiagnosticReport(body);
 
             byte[] jsonBytes = fhirJson.getBytes(StandardCharsets.UTF_8);
-            String fileName = getFilename(reportDTO, ".json");
+            String fileName = getFilename(body.getReport(), ".json");
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
@@ -105,8 +106,8 @@ public final class ReportController {
     }
 
     @PostMapping("/fhircast")
-    public ResponseEntity<?> uploadToFhirCast(@RequestBody ReportDTO reportDTO){
-        var resp = reportService.uploadToFhirServer(reportDTO);
+    public ResponseEntity<?> uploadToFhirCast(@RequestBody FhirSRDTO body){
+        var resp = reportService.uploadToFhirServer(body);
         if (resp == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
