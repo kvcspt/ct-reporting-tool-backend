@@ -6,8 +6,10 @@ import hu.kvcspt.ctreportingtoolbackend.enums.Gender;
 import hu.kvcspt.ctreportingtoolbackend.util.DicomUtils;
 import hu.kvcspt.ctreportingtoolbackend.util.GeneralUtils;
 import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
+import net.sourceforge.plantuml.utils.Log;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.Tag;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +18,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service
@@ -60,6 +69,16 @@ public class ScanService {
         return scans;
     }
 
+    public void deleteScanStudy(String studyInstanceUID) {
+        String studyUUID = findStudyUUIDByUID(studyInstanceUID);
+        if (studyUUID != null) {
+
+            deleteStudy(studyUUID);
+        } else {
+            Log.error("Study not found");
+        }
+    }
+
     public ScanDTO processDicomFile(MultipartFile file) throws IOException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
@@ -88,6 +107,79 @@ public class ScanService {
                 .studyUid(mainDicomTags.get("StudyInstanceUID"))
                 .seriesUid(seriesMainDicom.get("SeriesInstanceUID"))
                 .build();
+    }
+
+    private void deleteStudy(String studyUUID) {
+        try {
+            URL url = new URL(  orthancServerUrl+ STUDIES_URL + "/" + studyUUID);
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("DELETE");
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode == 200) {
+                System.out.println("Study deleted successfully.");
+            } else {
+                System.out.println("Failed to delete study. HTTP response code: " + responseCode);
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+    }
+
+    private String findStudyUUIDByUID(String studyInstanceUID) {
+        URI uri = URI.create(orthancServerUrl + "/tools/find");
+        HttpURLConnection conn = getHttpURLConnection(studyInstanceUID, uri);
+
+        StringBuilder response = new StringBuilder();
+        try {
+            assert conn != null;
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+        String res = response.toString();
+        if (res.startsWith("[\"") && res.endsWith("\"]")) {
+            return res.substring(2, res.length() - 2);
+        }
+
+        return null;
+    }
+
+    @NotNull
+    private static HttpURLConnection getHttpURLConnection(String studyInstanceUID, URI uri) {
+        try {
+            URL url = uri.toURL();
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Content-Type", "application/json");
+
+            String jsonInputString = String.format(
+                    "{\"Level\":\"Study\",\"Query\":{\"StudyInstanceUID\":\"%s\"}}", studyInstanceUID
+            );
+
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            return conn;
+
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     @Nullable

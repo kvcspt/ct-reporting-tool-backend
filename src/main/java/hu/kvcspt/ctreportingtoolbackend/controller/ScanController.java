@@ -34,4 +34,14 @@ public final class ScanController {
     public ResponseEntity<List<ScanDTO>> getScans() {
         return ResponseEntity.ok(scanService.getScans());
     }
+
+    @DeleteMapping("/{studyInstanceUID}")
+    public void deleteScan(@PathVariable String studyInstanceUID){
+        try {
+            scanService.deleteScanStudy(studyInstanceUID);
+        } catch (Exception e){
+            log.error(e.getMessage());
+        }
+    }
+
 }
