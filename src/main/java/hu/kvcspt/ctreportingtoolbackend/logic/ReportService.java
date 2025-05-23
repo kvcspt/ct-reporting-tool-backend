@@ -90,8 +90,11 @@ public class ReportService {
     public String generateDiagnosticReport(FhirSRDTO fhirSRDTO) {
         Report report = ReportMapper.INSTANCE.toEntity(fhirSRDTO.getReport());
         report.setCreatedDate(LocalDateTime.now());
+
         DiagnosticReport diagnosticReport = toFhirDiagnosticReport(report,fhirSRDTO.getForm(),false);
+
         FhirContext ctxR5 = FhirContext.forR5();
+
         IParser jsonParser = ctxR5.newJsonParser();
         jsonParser.setPrettyPrint(true);
 

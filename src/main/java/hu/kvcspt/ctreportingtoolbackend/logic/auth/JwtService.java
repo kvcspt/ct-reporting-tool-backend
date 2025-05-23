@@ -21,6 +21,9 @@ import java.util.function.Function;
 @Service
 @Log4j2
 public class JwtService {
+    private static final String ROLE = "role";
+    private static final String UID = "uid";
+
     private final String secretKey;
 
     public JwtService() {
@@ -35,14 +38,14 @@ public class JwtService {
 
     public String generateToken(String username, String role, Long id) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", role);
-        claims.put("uid", id);
+        claims.put(ROLE, role);
+        claims.put(UID, id);
         return Jwts.builder()
                 .claims()
                 .add(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 30 * 1000))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .and()
                 .signWith(getKey())
                 .compact();

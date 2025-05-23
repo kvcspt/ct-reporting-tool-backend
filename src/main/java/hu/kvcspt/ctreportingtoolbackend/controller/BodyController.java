@@ -25,6 +25,7 @@ import java.util.UUID;
 @Log4j2
 @AllArgsConstructor
 public class BodyController {
+    private static final String FILE = "file";
     private final BodyService bodyService;
     private final ScanService scanService;
 
@@ -118,7 +119,7 @@ public class BodyController {
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", new FileSystemResource(file));
+        body.add(FILE, new FileSystemResource(file));
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
         String orthancUrl = scanService.getOrthancServerUrl() + ScanService.INSTANCES_URL;

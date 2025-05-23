@@ -30,6 +30,14 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Log4j2
 public class BodyService {
+    private static final String SR = "SR";
+    private static final String TEXT = "TEXT";
+    private static final String DCM = "DCM";
+    private static final String TITLE_CODE_VALUE = "121144";
+    private static final String ROOT_CODE_VALUE = "111700";
+    private static final String REPORT_ROOT = "Report Root";
+    private static final String SEPARATE = "SEPARATE";
+    private static final String CONTAINER = "CONTAINER";
     private SpringTemplateEngine templateEngine;
     private BodyTemplateRepository bodyTemplateRepository;
 
@@ -101,7 +109,7 @@ public class BodyService {
         attrs.setString(Tag.SOPInstanceUID, VR.UI, UIDUtils.createUID());
         attrs.setString(Tag.StudyInstanceUID, VR.UI, scan.getStudyUid());
         attrs.setString(Tag.SeriesInstanceUID, VR.UI, scan.getSeriesUid());
-        attrs.setString(Tag.Modality, VR.CS, "SR");
+        attrs.setString(Tag.Modality, VR.CS, SR);
         attrs.setString(Tag.PatientID, VR.LO, scan.getPatient().getId());
         attrs.setString(Tag.PatientName, VR.PN, scan.getPatient().getName());
         attrs.setDate(Tag.StudyDate, VR.DA, Date.valueOf(scan.getScanDate().toLocalDate()));
@@ -117,24 +125,24 @@ public class BodyService {
         refSeriesSeq.add(refSeries);
 
         Attributes root = new Attributes();
-        root.setString(Tag.ValueType, VR.CS, "CONTAINER");
-        root.setString(Tag.ContinuityOfContent, VR.CS, "SEPARATE");
-        root.setString(Tag.CodeMeaning, VR.LO, "Report Root");
-        root.setString(Tag.CodeValue, VR.SH, "111700");
-        root.setString(Tag.CodingSchemeDesignator, VR.SH, "DCM");
+        root.setString(Tag.ValueType, VR.CS, CONTAINER);
+        root.setString(Tag.ContinuityOfContent, VR.CS, SEPARATE);
+        root.setString(Tag.CodeMeaning, VR.LO, REPORT_ROOT);
+        root.setString(Tag.CodeValue, VR.SH, ROOT_CODE_VALUE);
+        root.setString(Tag.CodingSchemeDesignator, VR.SH, DCM);
 
         Sequence contentSequence = root.newSequence(Tag.ContentSequence, report.size());
 
         Sequence conceptNameCodeSeq = root.newSequence(Tag.ConceptNameCodeSequence, 1);
         Attributes titleAttr = new Attributes();
-        titleAttr.setString(Tag.CodeValue, VR.ST, "121144");
-        titleAttr.setString(Tag.CodingSchemeDesignator, VR.SH, "DCM");
+        titleAttr.setString(Tag.CodeValue, VR.ST, TITLE_CODE_VALUE);
+        titleAttr.setString(Tag.CodingSchemeDesignator, VR.SH, DCM);
         titleAttr.setString(Tag.CodeMeaning, VR.LO, body.getTitle());
         conceptNameCodeSeq.add(titleAttr);
 
         report.forEach(element -> {
             Attributes item = new Attributes();
-            item.setString(Tag.ValueType, VR.CS, "TEXT");
+            item.setString(Tag.ValueType, VR.CS, TEXT);
             item.setString(Tag.CodeMeaning, VR.LO, element.getLabel());
             item.setString(Tag.TextValue, VR.UT, element.getValue());
             contentSequence.add(item);
@@ -142,7 +150,7 @@ public class BodyService {
 
         attrs.newSequence(Tag.ContentSequence, 1).add(root);
 
-        File file = new File("dicom_sr.dcm");
+        File file = new File(body.getTitle() + ".dcm");
         try (DicomOutputStream dos = new DicomOutputStream(file)) {
             dos.writeDataset(null, attrs);
         } catch (IOException e) {
